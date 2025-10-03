@@ -89,6 +89,21 @@ export async function GET(request: NextRequest) {
     // Проверяем наличие ошибок
     if (error) {
       console.error('Ошибка авторизации AmoCRM:', error, errorDescription)
+      
+      // Специальная обработка для ошибки 405
+      if (error === 'invalid_request' || errorDescription?.includes('405')) {
+        return NextResponse.json({
+          success: false,
+          error: 'Invalid OAuth2 request',
+          message: 'Неправильный запрос авторизации. Проверьте настройки интеграции в AmoCRM.',
+          details: {
+            error,
+            error_description: errorDescription,
+            suggestion: 'Убедитесь, что интеграция настроена правильно и Redirect URI совпадает'
+          }
+        }, { status: 400 })
+      }
+      
       return NextResponse.json({
         success: false,
         error: 'Authorization failed',

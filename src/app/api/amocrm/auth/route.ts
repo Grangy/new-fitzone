@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
     const state = Math.random().toString(36).substring(2, 15) + 
                   Math.random().toString(36).substring(2, 15)
     
-    // Получаем URL авторизации AmoCRM
-    const authUrl = getAmoCRMAuthUrl(state)
+    // Получаем URL авторизации AmoCRM (без popup режима для избежания ошибки 405)
+    const authUrl = getAmoCRMAuthUrl(state, false)
     
     console.log('Инициация авторизации AmoCRM:', {
       authUrl: authUrl.substring(0, 50) + '...',
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     const state = Math.random().toString(36).substring(2, 15) + 
                   Math.random().toString(36).substring(2, 15)
     
-    // Получаем URL авторизации AmoCRM
-    const authUrl = getAmoCRMAuthUrl(state)
+    // Получаем URL авторизации AmoCRM (без popup режима для избежания ошибки 405)
+    const authUrl = getAmoCRMAuthUrl(state, false)
     
     console.log('Прямой редирект на авторизацию AmoCRM:', {
       authUrl: authUrl.substring(0, 50) + '...',

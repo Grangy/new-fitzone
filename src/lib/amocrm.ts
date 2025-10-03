@@ -24,13 +24,18 @@ export const amocrmConfig: AmoCRMConfig = {
 }
 
 // Функция для получения URL авторизации AmoCRM
-export function getAmoCRMAuthUrl(state?: string): string {
+export function getAmoCRMAuthUrl(state?: string, usePopup: boolean = false): string {
   const params = new URLSearchParams({
     client_id: amocrmConfig.clientId,
     redirect_uri: amocrmConfig.redirectUri,
     response_type: 'code',
     scope: 'crm'
   })
+
+  // Добавляем режим только если нужен popup
+  if (usePopup) {
+    params.append('mode', 'popup')
+  }
 
   if (state) {
     params.append('state', state)
