@@ -7,10 +7,89 @@ interface FormData {
   message?: string
 }
 
+// AmoCRM конфигурация
+const AMOCRM_CONFIG = {
+  subdomain: process.env.AMOCRM_SUBDOMAIN || 'your-subdomain',
+  longToken: process.env.AMOCRM_LONG_TOKEN || 'your-long-token'
+}
+
 // Webhook конфигурация
 const WEBHOOK_CONFIG = {
   url: process.env.WEBHOOK_URL || 'https://your-webhook-endpoint.com/leads',
   secret: process.env.WEBHOOK_SECRET || 'your-webhook-secret'
+}
+
+// Функция для создания лида в AmoCRM
+async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean; leadId?: number; error?: string }> {
+  try {
+    const { name, phone, direction, message } = formData
+    
+    const leadData = {
+      name: `Заявка от ${name} - ${direction}`,
+      price: 0,
+      custom_fields_values: [
+        {
+          field_id: 264911, // ID поля "Телефон"
+          values: [{ value: phone }]
+        },
+        {
+          field_id: 264913, // ID поля "Направление тренировки"
+          values: [{ value: direction }]
+        },
+        {
+          field_id: 264915, // ID поля "Источник"
+          values: [{ value: 'FitZone Landing' }]
+        }
+      ]
+    }
+
+    // Добавляем сообщение как примечание, если есть
+    if (message) {
+      leadData.custom_fields_values.push({
+        field_id: 264917, // ID поля "Комментарий" (настройте в AmoCRM)
+        values: [{ value: message }]
+      })
+    }
+
+    const response = await fetch(`https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify([leadData])
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Ошибка AmoCRM API:', response.status, errorText)
+      return { 
+        success: false, 
+        error: `AmoCRM API error: ${response.status}` 
+      }
+    }
+
+    const result = await response.json()
+    const lead = result?._embedded?.leads?.[0]
+    
+    console.log('Лид успешно создан в AmoCRM:', {
+      id: lead?.id,
+      name: lead?.name,
+      url: lead?.id ? `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/leads/detail/${lead.id}` : null
+    })
+
+    return { 
+      success: true, 
+      leadId: lead?.id 
+    }
+
+  } catch (error) {
+    console.error('Ошибка создания лида в AmoCRM:', error)
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    }
+  }
 }
 
 // Функция для отправки лида через webhook
@@ -141,7 +220,16 @@ export async function POST(request: NextRequest) {
     // Отправка уведомления в Telegram
     await sendTelegramNotification(formData)
 
-    // Отправка лида через webhook
+    // Создание лида в AmoCRM
+    let amocrmResult = null
+    try {
+      amocrmResult = await createAmoCRMLead(formData)
+    } catch (error) {
+      console.error('Ошибка создания лида в AmoCRM:', error)
+      // Не прерываем выполнение, если AmoCRM недоступен
+    }
+
+    // Отправка лида через webhook (опционально)
     let webhookSuccess = false
     try {
       webhookSuccess = await sendLeadToWebhook(formData)
@@ -155,12 +243,16 @@ export async function POST(request: NextRequest) {
       name: formData.name,
       direction: formData.direction,
       timestamp: new Date().toISOString(),
+      amocrmSuccess: amocrmResult?.success || false,
+      amocrmLeadId: amocrmResult?.leadId,
       webhookSuccess
     })
 
     return NextResponse.json({
       success: true,
       message: 'Заявка успешно отправлена',
+      amocrmSuccess: amocrmResult?.success || false,
+      amocrmLeadId: amocrmResult?.leadId,
       webhookSuccess
     })
 
