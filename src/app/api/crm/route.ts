@@ -1,247 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+/**
+ * Данные формы, которые приходят с фронта.
+ * Поля formPage / referer необязательны, но если вы их передадите — мы возьмём их приоритетно.
+ */
 interface FormData {
   name: string
   phone: string
+  workPhone?: string
   direction: string
   message?: string
+  formPage?: string
+  referer?: string
 }
 
-// AmoCRM конфигурация
 const AMOCRM_CONFIG = {
   subdomain: process.env.AMOCRM_SUBDOMAIN || 'your-subdomain',
-  longToken: process.env.AMOCRM_LONG_TOKEN || 'your-long-token'
+  longToken: process.env.AMOCRM_LONG_TOKEN || 'your-long-token',
+  pipelineId: process.env.AMOCRM_PIPELINE_ID ? Number(process.env.AMOCRM_PIPELINE_ID) : undefined,
+  siteUrl: process.env.SITE_URL || '' // на случай, если в заголовках нет referer
 }
 
-// Webhook удален - используем только AmoCRM + Telegram
-
-// Функция для создания контакта в AmoCRM
-async function createAmoCRMContact(formData: FormData): Promise<{ success: boolean; contactId?: number; error?: string }> {
-  try {
-    // Проверяем конфигурацию AmoCRM
-    if (!AMOCRM_CONFIG.subdomain || AMOCRM_CONFIG.subdomain === 'your-subdomain') {
-      console.warn('AmoCRM не настроен: AMOCRM_SUBDOMAIN не указан')
-      return { 
-        success: false, 
-        error: 'AmoCRM не настроен: укажите AMOCRM_SUBDOMAIN' 
-      }
-    }
-
-    if (!AMOCRM_CONFIG.longToken || AMOCRM_CONFIG.longToken === 'your-long-token') {
-      console.warn('AmoCRM не настроен: AMOCRM_LONG_TOKEN не указан')
-      return { 
-        success: false, 
-        error: 'AmoCRM не настроен: укажите AMOCRM_LONG_TOKEN' 
-      }
-    }
-
-    const { name, phone, direction, message } = formData
-    
-    console.log('Создание контакта в AmoCRM:', {
-      subdomain: AMOCRM_CONFIG.subdomain,
-      hasToken: !!AMOCRM_CONFIG.longToken,
-      contactData: { name, phone, direction, message }
-    })
-    
-    // Создаем контакт с телефоном
-    const contactData = {
-      name: name,
-      custom_fields_values: [
-        {
-          field_code: 'PHONE',
-          values: [{ value: phone }]
-        }
-      ]
-    }
-
-    console.log('Данные контакта:', {
-      name: contactData.name,
-      phone: phone
-    })
-
-    // Строим URL для контактов
-    let baseUrl
-    if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
-      baseUrl = `https://${AMOCRM_CONFIG.subdomain}/api/v4/contacts`
-    } else {
-      baseUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/contacts`
-    }
-    
-    console.log('AmoCRM Contacts URL:', baseUrl)
-    
-    const response = await fetch(baseUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify([contactData])
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Ошибка AmoCRM Contacts API:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText,
-        url: baseUrl
-      })
-      return { 
-        success: false, 
-        error: `AmoCRM Contacts API error: ${response.status} - ${errorText}` 
-      }
-    }
-
-    const result = await response.json()
-    const contact = result?._embedded?.contacts?.[0]
-    
-    console.log('Контакт успешно создан в AmoCRM:', {
-      id: contact?.id,
-      name: contact?.name
-    })
-
-    return { 
-      success: true, 
-      contactId: contact?.id 
-    }
-
-  } catch (error) {
-    console.error('Ошибка создания контакта в AmoCRM:', error)
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    }
-  }
-}
-
-// Функция для создания лида в AmoCRM
-async function createAmoCRMLead(formData: FormData, contactId?: number): Promise<{ success: boolean; leadId?: number; error?: string }> {
-  try {
-    // Проверяем конфигурацию AmoCRM
-    if (!AMOCRM_CONFIG.subdomain || AMOCRM_CONFIG.subdomain === 'your-subdomain') {
-      console.warn('AmoCRM не настроен: AMOCRM_SUBDOMAIN не указан')
-      return { 
-        success: false, 
-        error: 'AmoCRM не настроен: укажите AMOCRM_SUBDOMAIN' 
-      }
-    }
-
-    if (!AMOCRM_CONFIG.longToken || AMOCRM_CONFIG.longToken === 'your-long-token') {
-      console.warn('AmoCRM не настроен: AMOCRM_LONG_TOKEN не указан')
-      return { 
-        success: false, 
-        error: 'AmoCRM не настроен: укажите AMOCRM_LONG_TOKEN' 
-      }
-    }
-
-  const { name, phone, direction, message } = formData
-
-    console.log('Создание лида в AmoCRM:', {
-      subdomain: AMOCRM_CONFIG.subdomain,
-      hasToken: !!AMOCRM_CONFIG.longToken,
-      tokenLength: AMOCRM_CONFIG.longToken?.length || 0,
-      tokenStart: AMOCRM_CONFIG.longToken?.substring(0, 20) + '...',
-      leadData: { name, phone, direction, message }
-    })
-    
-    // Создаем лид с привязкой к контакту
-    const leadData = {
-      name: `Заявка от ${name} - ${direction}`,
-      price: 0,
-      contacts: contactId ? [{ id: contactId }] : [
-        {
-          phone: phone
-        }
-      ]
-    }
-
-    console.log('Данные лида:', {
-      name: leadData.name,
-      phone: phone,
-      direction: direction,
-      message: message
-    })
-
-    // Проверяем, содержит ли subdomain уже полный домен
-    let baseUrl
-    if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
-      // Если уже полный домен, используем как есть
-      baseUrl = `https://${AMOCRM_CONFIG.subdomain}/api/v4/leads`
-      console.log('Используем полный домен:', AMOCRM_CONFIG.subdomain)
-    } else {
-      // Если только subdomain, добавляем .amocrm.ru
-      baseUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
-      console.log('Добавляем .amocrm.ru к subdomain:', AMOCRM_CONFIG.subdomain)
-    }
-    
-    console.log('AmoCRM URL:', baseUrl)
-    console.log('Проверка URL:', {
-      originalSubdomain: AMOCRM_CONFIG.subdomain,
-      containsAmocrm: AMOCRM_CONFIG.subdomain.includes('.amocrm.ru'),
-      finalUrl: baseUrl
-    })
-    
-    const response = await fetch(baseUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify([leadData])
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Ошибка AmoCRM API:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText,
-        url: baseUrl
-      })
-      return { 
-        success: false, 
-        error: `AmoCRM API error: ${response.status} - ${errorText}` 
-      }
-    }
-
-    const result = await response.json()
-    const lead = result?._embedded?.leads?.[0]
-    
-    // Строим правильный URL для лида
-    let leadUrl = null
-    if (lead?.id) {
-      if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
-        leadUrl = `https://${AMOCRM_CONFIG.subdomain}/leads/detail/${lead.id}`
-      } else {
-        leadUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/leads/detail/${lead.id}`
-      }
-    }
-
-    console.log('Лид успешно создан в AmoCRM:', {
-      id: lead?.id,
-      name: lead?.name,
-      url: leadUrl
-    })
-
-    return { 
-      success: true, 
-      leadId: lead?.id 
-    }
-
-  } catch (error) {
-    console.error('Ошибка создания лида в AmoCRM:', error)
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
-    }
-  }
-}
-
-// Webhook функции удалены
-
-// Webhook функции удалены
-
-// Функция для отправки уведомления в Telegram
+// ====== Telegram уведомление (как у вас было) ======
 async function sendTelegramNotification(formData: FormData) {
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN
   const telegramChatId = process.env.TELEGRAM_CHAT_ID
@@ -256,6 +36,7 @@ async function sendTelegramNotification(formData: FormData) {
 
 👤 *Имя:* ${formData.name}
 📞 *Телефон:* ${formData.phone}
+${formData.workPhone ? `📱 *Рабочий телефон:* ${formData.workPhone}` : ''}
 🏃 *Направление:* ${formData.direction}
 ${formData.message ? `💬 *Сообщение:* ${formData.message}` : ''}
 
@@ -264,9 +45,7 @@ ${formData.message ? `💬 *Сообщение:* ${formData.message}` : ''}
 
     const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: telegramChatId,
         text: message,
@@ -284,73 +63,159 @@ ${formData.message ? `💬 *Сообщение:* ${formData.message}` : ''}
   }
 }
 
+// ====== Отправка в «Неразобранное» (тип: форма) строго по документации ======
+async function createUnsortedFormLead(
+  request: NextRequest,
+  formData: FormData
+): Promise<{ success: boolean; uid?: string; leadId?: number; contactId?: number; error?: string }> {
+  try {
+    if (!AMOCRM_CONFIG.subdomain || !AMOCRM_CONFIG.longToken) {
+      return { success: false, error: 'AmoCRM не настроен' }
+    }
+
+    const { name, phone } = formData
+    const nowSec = Math.floor(Date.now() / 1000)
+
+    // Согласно доке, metadata.form_page и metadata.referer не должны быть пустыми (NotBlank).
+    // Источники:
+    // - из тела (formData.formPage / formData.referer),
+    // - из заголовка Referer,
+    // - из SITE_URL,
+    // - запасной дефолт (не пустая строка).
+    const headerReferer = request.headers.get('referer') || request.headers.get('origin') || ''
+    const form_page =
+      (formData.formPage && formData.formPage.trim()) ||
+      (headerReferer && headerReferer.trim()) ||
+      (AMOCRM_CONFIG.siteUrl && AMOCRM_CONFIG.siteUrl.trim()) ||
+      'https://example.com' // не пустая заглушка, чтобы пройти NotBlank
+    const referer =
+      (formData.referer && formData.referer.trim()) ||
+      (headerReferer && headerReferer.trim()) ||
+      (AMOCRM_CONFIG.siteUrl && AMOCRM_CONFIG.siteUrl.trim()) ||
+      'https://example.com' // не пустая заглушка, чтобы пройти NotBlank
+
+    // Требуемые поля верхнего уровня: source_uid, source_name, metadata (+ created_at/pipeline_id по желанию)
+    // Вложенные сущности строго под _embedded: leads[], contacts[] (каждый массив с одним объектом)
+    // Телефон — системное поле через field_code: "PHONE".
+    const payload = [
+      {
+        source_uid: 'fitzone_form',         // ваш постоянный UID источника (любой уникальный)
+        source_name: 'FitZone Landing',     // человекочитаемое имя источника
+        request_id: `req_${nowSec}`,        // вернётся как есть (не обязателен)
+        created_at: nowSec,                 // unix timestamp (не обязателен, но полезен)
+        ...(AMOCRM_CONFIG.pipelineId ? { pipeline_id: AMOCRM_CONFIG.pipelineId } : {}),
+        metadata: {
+          form_id: 'fitzone_form',          // ID формы на вашей стороне
+          form_name: 'Форма заявки',        // имя формы
+          form_page,                        // <-- НЕ пустое (NotBlank)
+          form_sent_at: nowSec,             // unix timestamp отправки формы
+          referer                           // <-- НЕ пустое (NotBlank)
+        },
+        _embedded: {
+          leads: [
+            {
+              name: `Заявка от ${name}`
+            }
+          ],
+          contacts: [
+            {
+              name,
+              custom_fields_values: [
+                {
+                  field_code: 'PHONE',
+                  values: [{ value: phone }]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+
+    // Правильный URL из сабдомена
+    const baseUrl = AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')
+      ? `https://${AMOCRM_CONFIG.subdomain}/api/v4/leads/unsorted/forms`
+      : `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads/unsorted/forms`
+
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errText = await response.text()
+      console.error('Ошибка unsorted/forms API:', errText)
+      return { success: false, error: `Unsorted API error: ${response.status} - ${errText}` }
+    }
+
+    // Ответ по доке: вернётся объект(ы) unsorted с ссылками на вложенные сущности
+    // На этот момент сделка и контакт ещё "в неразобранном"; прямых id лида/контакта может не быть до принятия.
+    const result = await response.json()
+
+    // Из примеров в доке: в ответе отдаётся сущность с _embedded.leads/contacts и ссылками (id может присутствовать)
+    const first = Array.isArray(result)? result[0] : (result?._embedded?.unsorted?.[0] || result)
+    const uid = first?.uid || first?.id // uid неразобранного (если вернули)
+    const embedded = first?._embedded || result?._embedded
+    const lead = embedded?.leads?.[0]
+    const contact = embedded?.contacts?.[0]
+
+    return {
+      success: true,
+      uid,
+      leadId: lead?.id,
+      contactId: contact?.id
+    }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+  }
+}
+
+// ====== Основной обработчик ======
 export async function POST(request: NextRequest) {
   try {
     const formData: FormData = await request.json()
 
-    // Валидация данных
+    // Базовая валидация
     if (!formData.name || !formData.phone || !formData.direction) {
-      return NextResponse.json(
-        { error: 'Не все обязательные поля заполнены' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Не все обязательные поля заполнены' }, { status: 400 })
     }
 
-    // Валидация телефона (простая проверка)
     const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/
     if (!phoneRegex.test(formData.phone)) {
-      return NextResponse.json(
-        { error: 'Некорректный формат телефона' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Некорректный формат телефона' }, { status: 400 })
     }
 
-    // Отправка уведомления в Telegram
+    // Уведомим в Telegram (не влияет на CRM)
     await sendTelegramNotification(formData)
 
-    // Создание контакта в AmoCRM
-    let contactResult = null
-    try {
-      contactResult = await createAmoCRMContact(formData)
-    } catch (error) {
-      console.error('Ошибка создания контакта в AmoCRM:', error)
-      // Не прерываем выполнение, если AmoCRM недоступен
-    }
+    // Строго по доке «Неразобранное → формы»
+    const unsorted = await createUnsortedFormLead(request, formData)
 
-    // Создание лида в AmoCRM с привязкой к контакту
-    let amocrmResult = null
-    try {
-      amocrmResult = await createAmoCRMLead(formData, contactResult?.contactId)
-    } catch (error) {
-      console.error('Ошибка создания лида в AmoCRM:', error)
-      // Не прерываем выполнение, если AmoCRM недоступен
-    }
-
-    // Логирование заявки
-    console.log('Новая заявка:', {
+    console.log('Новая заявка (unsorted):', {
       name: formData.name,
       direction: formData.direction,
       timestamp: new Date().toISOString(),
-      contactSuccess: contactResult?.success || false,
-      contactId: contactResult?.contactId,
-      amocrmSuccess: amocrmResult?.success || false,
-      amocrmLeadId: amocrmResult?.leadId
+      uid: unsorted.uid,
+      amocrmSuccess: unsorted.success,
+      leadId: unsorted.leadId,
+      contactId: unsorted.contactId,
+      error: unsorted.error
     })
 
     return NextResponse.json({
-      success: true,
-      message: 'Заявка успешно отправлена',
-      contactSuccess: contactResult?.success || false,
-      contactId: contactResult?.contactId,
-      amocrmSuccess: amocrmResult?.success || false,
-      amocrmLeadId: amocrmResult?.leadId
+      success: unsorted.success,
+      message: unsorted.success ? 'Заявка отправлена в «Неразобранное»' : 'Ошибка при отправке в AmoCRM',
+      uid: unsorted.uid,
+      leadId: unsorted.leadId,
+      contactId: unsorted.contactId,
+      error: unsorted.error
     })
-
   } catch (error) {
     console.error('Ошибка обработки заявки:', error)
-    return NextResponse.json(
-      { error: 'Внутренняя ошибка сервера' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Внутренняя ошибка сервера' }, { status: 500 })
   }
 }
