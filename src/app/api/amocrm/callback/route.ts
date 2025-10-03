@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { saveTokens } from '@/lib/tokenManager'
 
 // Конфигурация amoCRM
 const AMOCRM_CONFIG = {
@@ -151,7 +152,13 @@ export async function GET(request: NextRequest) {
 
       const tokenData: AmoCRMTokenResponse = await tokenResponse.json()
       
-      console.log('Токен успешно получен:', {
+      // Сохраняем токены в менеджере
+      saveTokens({
+        ...tokenData,
+        created_at: Date.now()
+      })
+      
+      console.log('Токен успешно получен и сохранен:', {
         token_type: tokenData.token_type,
         expires_in: tokenData.expires_in,
         access_token: tokenData.access_token.substring(0, 10) + '...',

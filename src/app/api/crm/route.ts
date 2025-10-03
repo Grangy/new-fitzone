@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getValidToken, needsAuthorization, getAuthUrl } from '@/lib/tokenManager'
 
 interface FormData {
   name: string
@@ -50,7 +51,7 @@ interface AmoCRMResponse {
   }
 }
 
-async function createAmoCRMLead(formData: FormData): Promise<AmoCRMResponse> {
+async function createAmoCRMLead(formData: FormData, accessToken: string): Promise<AmoCRMResponse> {
   const { name, phone, direction, message } = formData
 
   // Создание контакта
@@ -93,7 +94,7 @@ async function createAmoCRMLead(formData: FormData): Promise<AmoCRMResponse> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AMOCRM_CONFIG.accessToken}`
+        'Authorization': `Bearer ${accessToken}`
       },
       body: JSON.stringify([lead])
     })
@@ -151,6 +152,29 @@ export async function POST(request: NextRequest) {
   try {
     const formData: FormData = await request.json()
 
+    // Проверяем, нужна ли авторизация
+    if (needsAuthorization()) {
+      console.log('Требуется авторизация AmoCRM')
+      return NextResponse.json({
+        success: false,
+        error: 'Authorization required',
+        message: 'Требуется авторизация в AmoCRM',
+        auth_url: getAuthUrl()
+      }, { status: 401 })
+    }
+
+    // Получаем валидный токен
+    const accessToken = await getValidToken()
+    if (!accessToken) {
+      console.log('Не удалось получить валидный токен')
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid token',
+        message: 'Не удалось получить валидный токен доступа',
+        auth_url: getAuthUrl()
+      }, { status: 401 })
+    }
+
     // Валидация данных
     if (!formData.name || !formData.phone || !formData.direction) {
       return NextResponse.json(
@@ -171,7 +195,7 @@ export async function POST(request: NextRequest) {
     // Создание сделки в amoCRM
     let crmResult = null
     try {
-      crmResult = await createAmoCRMLead(formData)
+      crmResult = await createAmoCRMLead(formData, accessToken)
     } catch (error) {
       console.error('Ошибка интеграции с amoCRM:', error)
       // Не прерываем выполнение, если CRM недоступна
