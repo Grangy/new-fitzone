@@ -33,11 +33,19 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="lg:col-span-2"
+            transition={{ 
+              duration: 0.7, 
+              ease: [0.25, 0.46, 0.45, 0.94],
+              type: "tween"
+            }}
+            viewport={{ 
+              once: true, 
+              margin: "-30px",
+              amount: 0.2
+            }}
+            className="lg:col-span-2 motion-safe"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
@@ -68,10 +76,20 @@ export default function Footer() {
 
           {/* Quick Links */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            viewport={{ once: true }}
+            transition={{ 
+              duration: 0.7, 
+              delay: 0.1,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              type: "tween"
+            }}
+            viewport={{ 
+              once: true, 
+              margin: "-30px",
+              amount: 0.2
+            }}
+            className="motion-safe"
           >
             <h4 className="text-lg font-semibold mb-6">Быстрые ссылки</h4>
             <ul className="space-y-3">
@@ -90,10 +108,20 @@ export default function Footer() {
 
           {/* Schedule & Social */}
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
+            transition={{ 
+              duration: 0.7, 
+              delay: 0.2,
+              ease: [0.25, 0.46, 0.45, 0.94],
+              type: "tween"
+            }}
+            viewport={{ 
+              once: true, 
+              margin: "-30px",
+              amount: 0.2
+            }}
+            className="motion-safe"
           >
             <h4 className="text-lg font-semibold mb-6">Режим работы</h4>
             <div className="space-y-2 mb-8">
@@ -125,11 +153,20 @@ export default function Footer() {
 
         {/* Expansion Plans */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          className="mt-12 pt-8 border-t border-gray-800"
+          transition={{ 
+            duration: 0.7, 
+            delay: 0.3,
+            ease: [0.25, 0.46, 0.45, 0.94],
+            type: "tween"
+          }}
+          viewport={{ 
+            once: true, 
+            margin: "-30px",
+            amount: 0.2
+          }}
+          className="mt-12 pt-8 border-t border-gray-800 motion-safe"
         >
           <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-2xl p-6 border border-orange-500/20">
             <h4 className="text-xl font-semibold mb-3 text-orange-400">
@@ -168,4 +205,3 @@ export default function Footer() {
     </footer>
   )
 }
-

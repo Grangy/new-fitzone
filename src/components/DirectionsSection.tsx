@@ -139,11 +139,20 @@ export default function DirectionsSection() {
           {directions.map((direction, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+              transition={{ 
+                duration: 0.7, 
+                delay: index * 0.08,
+                ease: [0.25, 0.46, 0.45, 0.94],
+                type: "tween"
+              }}
+              viewport={{ 
+                once: true, 
+                margin: "-30px",
+                amount: 0.2
+              }}
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe"
             >
               <div className="relative overflow-hidden">
                 <Image

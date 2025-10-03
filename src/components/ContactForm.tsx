@@ -106,10 +106,19 @@ export default function ContactForm() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Contact Form */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            transition={{ 
+              duration: 0.8, 
+              ease: [0.25, 0.46, 0.45, 0.94],
+              type: "tween"
+            }}
+            viewport={{ 
+              once: true, 
+              margin: "-50px",
+              amount: 0.3
+            }}
+            className="motion-safe"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               Запишись на <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">тренировку</span>
@@ -213,11 +222,19 @@ export default function ContactForm() {
 
           {/* Contact Info & App Download */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="space-y-8"
+            transition={{ 
+              duration: 0.8, 
+              ease: [0.25, 0.46, 0.45, 0.94],
+              type: "tween"
+            }}
+            viewport={{ 
+              once: true, 
+              margin: "-50px",
+              amount: 0.3
+            }}
+            className="space-y-8 motion-safe"
           >
             {/* Contact Information */}
             <div className="bg-gray-50 rounded-2xl p-8">
