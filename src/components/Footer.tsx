@@ -2,9 +2,12 @@
 
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, MessageCircle } from 'lucide-react'
+import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const { getAnimationConfig } = useMobileOptimizedAnimations()
+  const animationConfig = getAnimationConfig()
 
   const socialLinks = [
     { icon: Instagram, href: '#', label: 'Instagram' },
@@ -33,18 +36,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Section */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={animationConfig.initial}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.7, 
-              ease: [0.25, 0.46, 0.45, 0.94],
-              type: "tween"
-            }}
-            viewport={{ 
-              once: true, 
-              margin: "-30px",
-              amount: 0.2
-            }}
+            transition={animationConfig.transition}
+            viewport={animationConfig.viewport}
             className="lg:col-span-2 motion-safe"
           >
             <div className="flex items-center gap-3 mb-6">
@@ -76,19 +71,13 @@ export default function Footer() {
 
           {/* Quick Links */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={animationConfig.initial}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ 
-              duration: 0.7, 
-              delay: 0.1,
-              ease: [0.25, 0.46, 0.45, 0.94],
-              type: "tween"
+              ...animationConfig.transition,
+              delay: 0.1
             }}
-            viewport={{ 
-              once: true, 
-              margin: "-30px",
-              amount: 0.2
-            }}
+            viewport={animationConfig.viewport}
             className="motion-safe"
           >
             <h4 className="text-lg font-semibold mb-6">Быстрые ссылки</h4>
@@ -108,19 +97,13 @@ export default function Footer() {
 
           {/* Schedule & Social */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={animationConfig.initial}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ 
-              duration: 0.7, 
-              delay: 0.2,
-              ease: [0.25, 0.46, 0.45, 0.94],
-              type: "tween"
+              ...animationConfig.transition,
+              delay: 0.2
             }}
-            viewport={{ 
-              once: true, 
-              margin: "-30px",
-              amount: 0.2
-            }}
+            viewport={animationConfig.viewport}
             className="motion-safe"
           >
             <h4 className="text-lg font-semibold mb-6">Режим работы</h4>
@@ -153,19 +136,13 @@ export default function Footer() {
 
         {/* Expansion Plans */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={animationConfig.initial}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ 
-            duration: 0.7, 
-            delay: 0.3,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
+            ...animationConfig.transition,
+            delay: 0.3
           }}
-          viewport={{ 
-            once: true, 
-            margin: "-30px",
-            amount: 0.2
-          }}
+          viewport={animationConfig.viewport}
           className="mt-12 pt-8 border-t border-gray-800 motion-safe"
         >
           <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-2xl p-6 border border-orange-500/20">

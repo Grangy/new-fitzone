@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Star, Quote } from 'lucide-react'
+import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 import Image from 'next/image'
 
 const trainers = [
@@ -53,23 +54,18 @@ const testimonials = [
 ]
 
 export default function SocialProofSection() {
+  const { getAnimationConfig } = useMobileOptimizedAnimations()
+  const animationConfig = getAnimationConfig()
+
   return (
     <section className="section-padding bg-gray-50">
       <div className="container-custom">
         {/* Trainers Section */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={animationConfig.initial}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.8, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
-          viewport={{ 
-            once: true, 
-            margin: "-50px",
-            amount: 0.3
-          }}
+          transition={animationConfig.transition}
+          viewport={animationConfig.viewport}
           className="text-center mb-16 motion-safe"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -147,19 +143,13 @@ export default function SocialProofSection() {
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
+              initial={animationConfig.initial}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.7, 
-                delay: index * 0.08,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                type: "tween"
+                ...animationConfig.transition,
+                delay: index * (animationConfig.transition.duration * 0.1)
               }}
-              viewport={{ 
-                once: true, 
-                margin: "-30px",
-                amount: 0.2
-              }}
+              viewport={animationConfig.viewport}
               className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 relative motion-safe"
             >
               <Quote className="w-8 h-8 text-orange-500 mb-4" />

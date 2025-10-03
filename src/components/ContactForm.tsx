@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock, Send, Smartphone, QrCode } from 'lucide-react'
+import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 
 const directions = [
   'Йога',
@@ -23,6 +24,8 @@ export default function ContactForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const { getAnimationConfig } = useMobileOptimizedAnimations()
+  const animationConfig = getAnimationConfig()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,18 +109,10 @@ export default function ContactForm() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Contact Form */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={animationConfig.initial}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ 
-              duration: 0.8, 
-              ease: [0.25, 0.46, 0.45, 0.94],
-              type: "tween"
-            }}
-            viewport={{ 
-              once: true, 
-              margin: "-50px",
-              amount: 0.3
-            }}
+            transition={animationConfig.transition}
+            viewport={animationConfig.viewport}
             className="motion-safe"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -222,18 +217,10 @@ export default function ContactForm() {
 
           {/* Contact Info & App Download */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={animationConfig.initial}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ 
-              duration: 0.8, 
-              ease: [0.25, 0.46, 0.45, 0.94],
-              type: "tween"
-            }}
-            viewport={{ 
-              once: true, 
-              margin: "-50px",
-              amount: 0.3
-            }}
+            transition={animationConfig.transition}
+            viewport={animationConfig.viewport}
             className="space-y-8 motion-safe"
           >
             {/* Contact Information */}

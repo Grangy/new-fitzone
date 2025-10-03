@@ -6,6 +6,7 @@ import { ArrowRight, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
 import FitnessQuiz from './FitnessQuiz'
+import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 
 const directions = [
   {
@@ -68,6 +69,8 @@ export default function DirectionsSection() {
     title: string;
     description: string;
   } | null>(null)
+  const { getAnimationConfig } = useMobileOptimizedAnimations()
+  const animationConfig = getAnimationConfig()
 
 
   const handleBookingClick = (directionTitle: string) => {
@@ -139,19 +142,13 @@ export default function DirectionsSection() {
           {directions.map((direction, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
+              initial={animationConfig.initial}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.7, 
-                delay: index * 0.08,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                type: "tween"
+                ...animationConfig.transition,
+                delay: index * (animationConfig.transition.duration * 0.1)
               }}
-              viewport={{ 
-                once: true, 
-                margin: "-30px",
-                amount: 0.2
-              }}
+              viewport={animationConfig.viewport}
               className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe"
             >
               <div className="relative overflow-hidden">

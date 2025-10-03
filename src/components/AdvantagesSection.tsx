@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 import { Target, Users, Dumbbell, CreditCard, Clock } from 'lucide-react'
 
 const advantages = [
@@ -32,22 +33,17 @@ const advantages = [
 ]
 
 export default function AdvantagesSection() {
+  const { getAnimationConfig } = useMobileOptimizedAnimations()
+  const animationConfig = getAnimationConfig()
+
   return (
     <section id="advantages" className="section-padding bg-gray-50">
       <div className="container-custom">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={animationConfig.initial}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.8, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
-          viewport={{ 
-            once: true, 
-            margin: "-50px",
-            amount: 0.3
-          }}
+          transition={animationConfig.transition}
+          viewport={animationConfig.viewport}
           className="text-center mb-16 motion-safe"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -62,19 +58,13 @@ export default function AdvantagesSection() {
           {advantages.map((advantage, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
+              initial={animationConfig.initial}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
-                duration: 0.7, 
-                delay: index * 0.08,
-                ease: [0.25, 0.46, 0.45, 0.94],
-                type: "tween"
+                ...animationConfig.transition,
+                delay: index * (animationConfig.transition.duration * 0.1) // Адаптивная задержка
               }}
-              viewport={{ 
-                once: true, 
-                margin: "-30px",
-                amount: 0.2
-              }}
+              viewport={animationConfig.viewport}
               className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 motion-safe"
             >
               <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
@@ -92,19 +82,13 @@ export default function AdvantagesSection() {
 
         {/* Stats Section */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={animationConfig.initial}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ 
-            duration: 0.8, 
-            delay: 0.3,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
+            ...animationConfig.transition,
+            delay: 0.3
           }}
-          viewport={{ 
-            once: true, 
-            margin: "-50px",
-            amount: 0.3
-          }}
+          viewport={animationConfig.viewport}
           className="mt-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-8 md:p-12 text-white motion-safe"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
