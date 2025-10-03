@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Play, Pause, Volume2, VolumeX } from 'lucide-react'
+import { X, Play, Volume2, VolumeX } from 'lucide-react'
 
 interface VideoModalProps {
   isOpen: boolean
@@ -25,6 +25,13 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
       setIsMuted(true)
       setIsLoading(false)
       setHasError(false)
+      
+      // Автоматический запуск видео через небольшую задержку
+      const timer = setTimeout(() => {
+        handlePlay()
+      }, 500) // 500ms задержка для плавного появления модального окна
+      
+      return () => clearTimeout(timer)
     }
   }, [isOpen])
 
@@ -139,10 +146,11 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     ref={videoRef}
                     src={videoSrc}
                     poster={poster}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover cursor-pointer"
                     muted={isMuted}
                     playsInline
                     preload="metadata"
+                    onClick={handleVideoClick}
                     onLoadStart={() => setIsLoading(true)}
                     onCanPlay={() => setIsLoading(false)}
                     onError={() => {
@@ -162,19 +170,15 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     </div>
                   )}
 
-                  {/* Play/Pause Overlay */}
-                  {!isLoading && !hasError && (
+                  {/* Play/Pause Overlay - показываем только если видео не воспроизводится */}
+                  {!isLoading && !hasError && !isPlaying && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <button
                         onClick={handleVideoClick}
                         className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm hover:bg-opacity-30 transition-all duration-300"
-                        aria-label={isPlaying ? 'Пауза' : 'Воспроизведение'}
+                        aria-label="Воспроизведение"
                       >
-                        {isPlaying ? (
-                          <Pause className="w-8 h-8 text-white" />
-                        ) : (
-                          <Play className="w-8 h-8 text-white ml-1" />
-                        )}
+                        <Play className="w-8 h-8 text-white ml-1" />
                       </button>
                     </div>
                   )}
@@ -194,7 +198,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     </button>
 
                     <div className="text-white text-sm bg-black bg-opacity-50 px-3 py-1 rounded-full">
-                      {isPlaying ? 'Воспроизведение' : 'Нажмите для воспроизведения'}
+                      {isPlaying ? 'Воспроизведение' : 'Нажмите на видео для воспроизведения'}
                     </div>
                   </div>
                 </>
