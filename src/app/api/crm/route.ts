@@ -32,7 +32,7 @@ const AMOCRM_CONFIG = {
   subdomain: process.env.AMOCRM_SUBDOMAIN || 'your-subdomain',
   clientId: process.env.AMOCRM_CLIENT_ID || 'your-client-id',
   clientSecret: process.env.AMOCRM_CLIENT_SECRET || 'your-client-secret',
-  redirectUri: process.env.AMOCRM_REDIRECT_URI || 'your-redirect-uri',
+  redirectUri: process.env.AMOCRM_REDIRECT_URI || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/amocrm/callback`,
   accessToken: process.env.AMOCRM_ACCESS_TOKEN || 'your-access-token'
 }
 
