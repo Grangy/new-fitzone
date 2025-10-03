@@ -44,6 +44,8 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
     console.log('Создание лида в AmoCRM:', {
       subdomain: AMOCRM_CONFIG.subdomain,
       hasToken: !!AMOCRM_CONFIG.longToken,
+      tokenLength: AMOCRM_CONFIG.longToken?.length || 0,
+      tokenStart: AMOCRM_CONFIG.longToken?.substring(0, 20) + '...',
       leadData: { name, phone, direction, message }
     })
     
@@ -75,9 +77,14 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
     }
 
     // Проверяем, содержит ли subdomain уже полный домен
-    const baseUrl = AMOCRM_CONFIG.subdomain.includes('.amocrm.ru') 
-      ? `https://${AMOCRM_CONFIG.subdomain}/api/v4/leads`
-      : `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
+    let baseUrl
+    if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
+      // Если уже полный домен, используем как есть
+      baseUrl = `https://${AMOCRM_CONFIG.subdomain}/api/v4/leads`
+    } else {
+      // Если только subdomain, добавляем .amocrm.ru
+      baseUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
+    }
     
     console.log('AmoCRM URL:', baseUrl)
     

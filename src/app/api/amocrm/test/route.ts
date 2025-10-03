@@ -29,9 +29,14 @@ export async function GET() {
     // Тестируем подключение к AmoCRM
     try {
       // Проверяем, содержит ли subdomain уже полный домен
-      const baseUrl = AMOCRM_CONFIG.subdomain.includes('.amocrm.ru') 
-        ? `https://${AMOCRM_CONFIG.subdomain}/api/v4/account`
-        : `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/account`
+      let baseUrl
+      if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
+        // Если уже полный домен, используем как есть
+        baseUrl = `https://${AMOCRM_CONFIG.subdomain}/api/v4/account`
+      } else {
+        // Если только subdomain, добавляем .amocrm.ru
+        baseUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/account`
+      }
       
       console.log('AmoCRM test URL:', baseUrl)
       
