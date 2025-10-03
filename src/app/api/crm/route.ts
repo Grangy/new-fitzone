@@ -15,8 +15,107 @@ const AMOCRM_CONFIG = {
 
 // Webhook удален - используем только AmoCRM + Telegram
 
+// Функция для создания контакта в AmoCRM
+async function createAmoCRMContact(formData: FormData): Promise<{ success: boolean; contactId?: number; error?: string }> {
+  try {
+    // Проверяем конфигурацию AmoCRM
+    if (!AMOCRM_CONFIG.subdomain || AMOCRM_CONFIG.subdomain === 'your-subdomain') {
+      console.warn('AmoCRM не настроен: AMOCRM_SUBDOMAIN не указан')
+      return { 
+        success: false, 
+        error: 'AmoCRM не настроен: укажите AMOCRM_SUBDOMAIN' 
+      }
+    }
+
+    if (!AMOCRM_CONFIG.longToken || AMOCRM_CONFIG.longToken === 'your-long-token') {
+      console.warn('AmoCRM не настроен: AMOCRM_LONG_TOKEN не указан')
+      return { 
+        success: false, 
+        error: 'AmoCRM не настроен: укажите AMOCRM_LONG_TOKEN' 
+      }
+    }
+
+    const { name, phone, direction, message } = formData
+    
+    console.log('Создание контакта в AmoCRM:', {
+      subdomain: AMOCRM_CONFIG.subdomain,
+      hasToken: !!AMOCRM_CONFIG.longToken,
+      contactData: { name, phone, direction, message }
+    })
+    
+    // Создаем контакт с телефоном
+    const contactData = {
+      name: name,
+      custom_fields_values: [
+        {
+          field_code: 'PHONE',
+          values: [{ value: phone }]
+        }
+      ]
+    }
+
+    console.log('Данные контакта:', {
+      name: contactData.name,
+      phone: phone
+    })
+
+    // Строим URL для контактов
+    let baseUrl
+    if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
+      baseUrl = `https://${AMOCRM_CONFIG.subdomain}/api/v4/contacts`
+    } else {
+      baseUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/contacts`
+    }
+    
+    console.log('AmoCRM Contacts URL:', baseUrl)
+    
+    const response = await fetch(baseUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify([contactData])
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Ошибка AmoCRM Contacts API:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+        url: baseUrl
+      })
+      return { 
+        success: false, 
+        error: `AmoCRM Contacts API error: ${response.status} - ${errorText}` 
+      }
+    }
+
+    const result = await response.json()
+    const contact = result?._embedded?.contacts?.[0]
+    
+    console.log('Контакт успешно создан в AmoCRM:', {
+      id: contact?.id,
+      name: contact?.name
+    })
+
+    return { 
+      success: true, 
+      contactId: contact?.id 
+    }
+
+  } catch (error) {
+    console.error('Ошибка создания контакта в AmoCRM:', error)
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    }
+  }
+}
+
 // Функция для создания лида в AmoCRM
-async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean; leadId?: number; error?: string }> {
+async function createAmoCRMLead(formData: FormData, contactId?: number): Promise<{ success: boolean; leadId?: number; error?: string }> {
   try {
     // Проверяем конфигурацию AmoCRM
     if (!AMOCRM_CONFIG.subdomain || AMOCRM_CONFIG.subdomain === 'your-subdomain') {
@@ -45,11 +144,11 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
       leadData: { name, phone, direction, message }
     })
     
-    // Создаем лид с контактом (телефон)
+    // Создаем лид с привязкой к контакту
     const leadData = {
       name: `Заявка от ${name} - ${direction}`,
       price: 0,
-      contacts: [
+      contacts: contactId ? [{ id: contactId }] : [
         {
           phone: phone
         }
@@ -209,10 +308,19 @@ export async function POST(request: NextRequest) {
     // Отправка уведомления в Telegram
     await sendTelegramNotification(formData)
 
-    // Создание лида в AmoCRM
+    // Создание контакта в AmoCRM
+    let contactResult = null
+    try {
+      contactResult = await createAmoCRMContact(formData)
+    } catch (error) {
+      console.error('Ошибка создания контакта в AmoCRM:', error)
+      // Не прерываем выполнение, если AmoCRM недоступен
+    }
+
+    // Создание лида в AmoCRM с привязкой к контакту
     let amocrmResult = null
     try {
-      amocrmResult = await createAmoCRMLead(formData)
+      amocrmResult = await createAmoCRMLead(formData, contactResult?.contactId)
     } catch (error) {
       console.error('Ошибка создания лида в AmoCRM:', error)
       // Не прерываем выполнение, если AmoCRM недоступен
@@ -223,6 +331,8 @@ export async function POST(request: NextRequest) {
       name: formData.name,
       direction: formData.direction,
       timestamp: new Date().toISOString(),
+      contactSuccess: contactResult?.success || false,
+      contactId: contactResult?.contactId,
       amocrmSuccess: amocrmResult?.success || false,
       amocrmLeadId: amocrmResult?.leadId
     })
@@ -230,6 +340,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Заявка успешно отправлена',
+      contactSuccess: contactResult?.success || false,
+      contactId: contactResult?.contactId,
       amocrmSuccess: amocrmResult?.success || false,
       amocrmLeadId: amocrmResult?.leadId
     })
