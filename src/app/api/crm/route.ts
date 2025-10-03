@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getValidToken, needsAuthorization, getAuthUrl } from '@/lib/tokenManager'
 
 interface FormData {
   name: string
@@ -8,141 +7,111 @@ interface FormData {
   message?: string
 }
 
-interface AmoCRMContact {
-  name: string
-  custom_fields_values?: Array<{
-    field_id: number
-    values: Array<{ value: string }>
-  }>
+// Webhook конфигурация
+const WEBHOOK_CONFIG = {
+  url: process.env.WEBHOOK_URL || 'https://your-webhook-endpoint.com/leads',
+  secret: process.env.WEBHOOK_SECRET || 'your-webhook-secret'
 }
 
-interface AmoCRMLead {
-  name: string
-  price: number
-  custom_fields_values?: Array<{
-    field_id: number
-    values: Array<{ value: string }>
-  }>
-  _embedded?: {
-    contacts?: AmoCRMContact[]
-  }
-}
-
-// Конфигурация amoCRM (в реальном проекте должна быть в переменных окружения)
-const AMOCRM_CONFIG = {
-  subdomain: process.env.AMOCRM_SUBDOMAIN || 'your-subdomain',
-  clientId: process.env.AMOCRM_CLIENT_ID || 'your-client-id',
-  clientSecret: process.env.AMOCRM_CLIENT_SECRET || 'your-client-secret',
-  redirectUri: process.env.AMOCRM_REDIRECT_URI || `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/amocrm/callback`,
-  accessToken: process.env.AMOCRM_ACCESS_TOKEN || 'your-access-token'
-}
-
-// ID полей в amoCRM (настраиваются в админке amoCRM)
-const FIELD_IDS = {
-  phone: 264911, // ID поля "Телефон"
-  direction: 264913, // ID поля "Направление тренировки"
-  source: 264915 // ID поля "Источник"
-}
-
-interface AmoCRMResponse {
-  _embedded?: {
-    leads?: Array<{ id: number }>
-    contacts?: Array<{ id: number }>
-  }
-}
-
-async function createAmoCRMLead(formData: FormData, accessToken: string): Promise<AmoCRMResponse> {
-  const { name, phone, direction, message } = formData
-
-  // Создание контакта
-  const contact: AmoCRMContact = {
-    name,
-    custom_fields_values: [
-      {
-        field_id: FIELD_IDS.phone,
-        values: [{ value: phone }]
-      }
-    ]
-  }
-
-  // Создание сделки
-  const lead: AmoCRMLead = {
-    name: `Заявка с сайта: ${direction}`,
-    price: 0,
-    custom_fields_values: [
-      {
-        field_id: FIELD_IDS.direction,
-        values: [{ value: direction }]
-      },
-      {
-        field_id: FIELD_IDS.source,
-        values: [{ value: 'Лендинг FitZone' }]
-      }
-    ],
-    _embedded: {
-      contacts: [contact]
-    }
-  }
-
-  // Добавляем сообщение в примечания, если есть
-  if (message) {
-    // В реальной интеграции здесь будет создание примечания к сделке
-  }
-
+// Функция для отправки лида через webhook
+async function sendLeadToWebhook(formData: FormData): Promise<boolean> {
   try {
-    const response = await fetch(`https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads/complex`, {
+    const leadData = {
+      name: formData.name,
+      phone: formData.phone,
+      direction: formData.direction,
+      message: formData.message || '',
+      timestamp: new Date().toISOString(),
+      source: 'FitZone Landing',
+      id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+    }
+
+    // Создаем подпись для безопасности
+    const signature = await createWebhookSignature(leadData, WEBHOOK_CONFIG.secret)
+
+    const response = await fetch(WEBHOOK_CONFIG.url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'X-Webhook-Signature': signature,
+        'X-Webhook-Source': 'FitZone-Landing'
       },
-      body: JSON.stringify([lead])
+      body: JSON.stringify(leadData)
     })
 
     if (!response.ok) {
-      throw new Error(`amoCRM API error: ${response.status}`)
+      throw new Error(`Webhook error: ${response.status}`)
     }
 
-    const result = await response.json()
-    return result
+    console.log('Лид успешно отправлен через webhook:', leadData.id)
+    return true
+
   } catch (error) {
-    console.error('Ошибка создания сделки в amoCRM:', error)
-    throw error
+    console.error('Ошибка отправки лида через webhook:', error)
+    return false
   }
 }
 
-async function sendTelegramNotification(formData: FormData): Promise<void> {
+// Функция для создания подписи webhook
+async function createWebhookSignature(data: Record<string, unknown>, secret: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  )
+  
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(JSON.stringify(data))
+  )
+  
+  return Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+// Функция для отправки уведомления в Telegram
+async function sendTelegramNotification(formData: FormData) {
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN
   const telegramChatId = process.env.TELEGRAM_CHAT_ID
 
   if (!telegramBotToken || !telegramChatId) {
-    console.log('Telegram уведомления не настроены')
+    console.log('Telegram не настроен, пропускаем уведомление')
     return
   }
 
-  const message = `
-🔥 Новая заявка с сайта FitZone!
-
-👤 Имя: ${formData.name}
-📞 Телефон: ${formData.phone}
-🏋️ Направление: ${formData.direction}
-${formData.message ? `💬 Сообщение: ${formData.message}` : ''}
-
-⏰ Время: ${new Date().toLocaleString('ru-RU')}
-  `.trim()
-
   try {
-    await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+    const message = `🎯 *Новая заявка с сайта FitZone*
+
+👤 *Имя:* ${formData.name}
+📞 *Телефон:* ${formData.phone}
+🏃 *Направление:* ${formData.direction}
+${formData.message ? `💬 *Сообщение:* ${formData.message}` : ''}
+
+⏰ *Время:* ${new Date().toLocaleString('ru-RU')}
+🌐 *Источник:* FitZone Landing`
+
+    const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         chat_id: telegramChatId,
         text: message,
-        parse_mode: 'HTML'
+        parse_mode: 'Markdown'
       })
     })
+
+    if (!response.ok) {
+      throw new Error(`Telegram API error: ${response.status}`)
+    }
+
+    console.log('Уведомление в Telegram отправлено')
   } catch (error) {
     console.error('Ошибка отправки Telegram уведомления:', error)
   }
@@ -151,29 +120,6 @@ ${formData.message ? `💬 Сообщение: ${formData.message}` : ''}
 export async function POST(request: NextRequest) {
   try {
     const formData: FormData = await request.json()
-
-    // Проверяем, нужна ли авторизация
-    if (needsAuthorization()) {
-      console.log('Требуется авторизация AmoCRM')
-      return NextResponse.json({
-        success: false,
-        error: 'Authorization required',
-        message: 'Требуется авторизация в AmoCRM',
-        auth_url: getAuthUrl()
-      }, { status: 401 })
-    }
-
-    // Получаем валидный токен
-    const accessToken = await getValidToken()
-    if (!accessToken) {
-      console.log('Не удалось получить валидный токен')
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid token',
-        message: 'Не удалось получить валидный токен доступа',
-        auth_url: getAuthUrl()
-      }, { status: 401 })
-    }
 
     // Валидация данных
     if (!formData.name || !formData.phone || !formData.direction) {
@@ -192,58 +138,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Создание сделки в amoCRM
-    let crmResult = null
-    try {
-      crmResult = await createAmoCRMLead(formData, accessToken)
-    } catch (error) {
-      console.error('Ошибка интеграции с amoCRM:', error)
-      // Не прерываем выполнение, если CRM недоступна
-    }
-
     // Отправка уведомления в Telegram
+    await sendTelegramNotification(formData)
+
+    // Отправка лида через webhook
+    let webhookSuccess = false
     try {
-      await sendTelegramNotification(formData)
+      webhookSuccess = await sendLeadToWebhook(formData)
     } catch (error) {
-      console.error('Ошибка отправки Telegram уведомления:', error)
-      // Не прерываем выполнение
+      console.error('Ошибка отправки webhook:', error)
+      // Не прерываем выполнение, если webhook недоступен
     }
 
-    // Логирование для аналитики
+    // Логирование заявки
     console.log('Новая заявка:', {
       name: formData.name,
       direction: formData.direction,
       timestamp: new Date().toISOString(),
-      crmSuccess: !!crmResult
+      webhookSuccess
     })
 
     return NextResponse.json({
       success: true,
       message: 'Заявка успешно отправлена',
-      leadId: crmResult?._embedded?.leads?.[0]?.id || null
+      webhookSuccess
     })
 
   } catch (error) {
     console.error('Ошибка обработки заявки:', error)
-    
     return NextResponse.json(
-      { 
-        error: 'Внутренняя ошибка сервера',
-        message: 'Попробуйте отправить заявку позже или свяжитесь с нами по телефону'
-      },
+      { error: 'Внутренняя ошибка сервера' },
       { status: 500 }
     )
   }
 }
-
-// Опциональный GET метод для проверки работоспособности API
-export async function GET() {
-  return NextResponse.json({
-    status: 'API работает',
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      POST: '/api/crm - отправка заявки'
-    }
-  })
-}
-
