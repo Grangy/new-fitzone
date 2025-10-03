@@ -5,6 +5,7 @@ import { Play, ChevronDown } from 'lucide-react'
 import { motion } from 'framer-motion'
 import BookingModal from './BookingModal'
 import OptimizedVideo from './OptimizedVideo'
+import VideoModal from './VideoModal'
 
 export default function HeroSection() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
@@ -15,6 +16,7 @@ export default function HeroSection() {
   const [videoError, setVideoError] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [userInteracted, setUserInteracted] = useState(false)
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const videoRef = useRef<{ playVideo: () => void } | null>(null)
 
   const scrollToSection = (sectionId: string) => {
@@ -27,11 +29,17 @@ export default function HeroSection() {
   }
 
   const handleVideoPlay = () => {
-    if (!isVideoLoaded && !videoError) {
-      setIsVideoPlaying(true)
-      setUserInteracted(true)
-    } else if (videoRef.current && videoRef.current.playVideo) {
-      videoRef.current.playVideo()
+    if (isMobile) {
+      // На мобильных открываем модальное окно
+      setIsVideoModalOpen(true)
+    } else {
+      // На десктопе воспроизводим как обычно
+      if (!isVideoLoaded && !videoError) {
+        setIsVideoPlaying(true)
+        setUserInteracted(true)
+      } else if (videoRef.current && videoRef.current.playVideo) {
+        videoRef.current.playVideo()
+      }
     }
   }
 
@@ -102,7 +110,7 @@ export default function HeroSection() {
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
-        {isVideoPlaying && !videoError ? (
+        {isVideoPlaying && !videoError && !isMobile ? (
           <OptimizedVideo
             ref={videoRef}
             src="/video.mp4"
@@ -110,7 +118,7 @@ export default function HeroSection() {
             className="w-full h-full object-cover"
             onLoad={handleVideoLoad}
             onError={handleVideoError}
-            autoPlay={!isMobile}
+            autoPlay={true}
           />
         ) : (
           <div 
@@ -319,6 +327,14 @@ export default function HeroSection() {
       <BookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
+      />
+
+      {/* Video Modal for Mobile */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        videoSrc="/video.mp4"
+        poster="/video-poster.jpg"
       />
     </section>
   )
