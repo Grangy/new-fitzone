@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Play, Volume2, VolumeX } from 'lucide-react'
+import { X, Play, Maximize2 } from 'lucide-react'
 
 interface VideoModalProps {
   isOpen: boolean
@@ -13,18 +13,18 @@ interface VideoModalProps {
 
 export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoModalProps) {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
   // Сброс состояния при открытии/закрытии
   useEffect(() => {
     if (isOpen) {
       setIsPlaying(false)
-      setIsMuted(true)
       setIsLoading(false)
       setHasError(false)
+      setIsFullscreen(false)
       
       // Автоматический запуск видео через небольшую задержку
       const timer = setTimeout(() => {
@@ -57,10 +57,19 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
     }
   }
 
-  const handleToggleMute = () => {
+  const handleFullscreen = async () => {
     if (videoRef.current) {
-      videoRef.current.muted = !isMuted
-      setIsMuted(!isMuted)
+      try {
+        if (!document.fullscreenElement) {
+          await videoRef.current.requestFullscreen()
+          setIsFullscreen(true)
+        } else {
+          await document.exitFullscreen()
+          setIsFullscreen(false)
+        }
+      } catch (error) {
+        console.error('Ошибка полноэкранного режима:', error)
+      }
     }
   }
 
@@ -86,6 +95,16 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
       handleClose()
     }
   }
+
+  // Отслеживание изменений полноэкранного режима
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
 
   return (
     <AnimatePresence>
@@ -147,7 +166,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     src={videoSrc}
                     poster={poster}
                     className="w-full h-full object-cover cursor-pointer"
-                    muted={isMuted}
+                    muted={true}
                     playsInline
                     preload="metadata"
                     onClick={handleVideoClick}
@@ -186,15 +205,11 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                   {/* Controls */}
                   <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
                     <button
-                      onClick={handleToggleMute}
+                      onClick={handleFullscreen}
                       className="w-10 h-10 bg-black bg-opacity-50 rounded-full flex items-center justify-center text-white hover:bg-opacity-70 transition-all duration-200"
-                      aria-label={isMuted ? 'Включить звук' : 'Выключить звук'}
+                      aria-label={isFullscreen ? 'Выйти из полноэкранного режима' : 'Открыть на весь экран'}
                     >
-                      {isMuted ? (
-                        <VolumeX className="w-5 h-5" />
-                      ) : (
-                        <Volume2 className="w-5 h-5" />
-                      )}
+                      <Maximize2 className="w-5 h-5" />
                     </button>
 
                     <div className="text-white text-sm bg-black bg-opacity-50 px-3 py-1 rounded-full">
