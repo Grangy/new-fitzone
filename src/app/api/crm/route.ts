@@ -13,11 +13,7 @@ const AMOCRM_CONFIG = {
   longToken: process.env.AMOCRM_LONG_TOKEN || 'your-long-token'
 }
 
-// Webhook конфигурация
-const WEBHOOK_CONFIG = {
-  url: process.env.WEBHOOK_URL || 'https://your-webhook-endpoint.com/leads',
-  secret: process.env.WEBHOOK_SECRET || 'your-webhook-secret'
-}
+// Webhook удален - используем только AmoCRM + Telegram
 
 // Функция для создания лида в AmoCRM
 async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean; leadId?: number; error?: string }> {
@@ -142,68 +138,9 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
   }
 }
 
-// Функция для отправки лида через webhook
-async function sendLeadToWebhook(formData: FormData): Promise<boolean> {
-  try {
-    const leadData = {
-      name: formData.name,
-      phone: formData.phone,
-      direction: formData.direction,
-      message: formData.message || '',
-      timestamp: new Date().toISOString(),
-      source: 'FitZone Landing',
-      id: `lead_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-    }
+// Webhook функции удалены
 
-    // Создаем подпись для безопасности
-    const signature = await createWebhookSignature(leadData, WEBHOOK_CONFIG.secret)
-
-    const response = await fetch(WEBHOOK_CONFIG.url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Webhook-Signature': signature,
-        'X-Webhook-Source': 'FitZone-Landing'
-      },
-      body: JSON.stringify(leadData),
-      // Добавляем опции для обработки SSL ошибок
-      signal: AbortSignal.timeout(10000) // 10 секунд таймаут
-    })
-
-    if (!response.ok) {
-      throw new Error(`Webhook error: ${response.status}`)
-    }
-
-    console.log('Лид успешно отправлен через webhook:', leadData.id)
-    return true
-
-  } catch (error) {
-    console.error('Ошибка отправки лида через webhook:', error)
-    return false
-  }
-}
-
-// Функция для создания подписи webhook
-async function createWebhookSignature(data: Record<string, unknown>, secret: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  
-  const signature = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    encoder.encode(JSON.stringify(data))
-  )
-  
-  return Array.from(new Uint8Array(signature))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('')
-}
+// Webhook функции удалены
 
 // Функция для отправки уведомления в Telegram
 async function sendTelegramNotification(formData: FormData) {
@@ -281,31 +218,20 @@ export async function POST(request: NextRequest) {
       // Не прерываем выполнение, если AmoCRM недоступен
     }
 
-    // Отправка лида через webhook (опционально)
-    let webhookSuccess = false
-    try {
-      webhookSuccess = await sendLeadToWebhook(formData)
-    } catch (error) {
-      console.error('Ошибка отправки webhook:', error)
-      // Не прерываем выполнение, если webhook недоступен
-    }
-
     // Логирование заявки
     console.log('Новая заявка:', {
       name: formData.name,
       direction: formData.direction,
       timestamp: new Date().toISOString(),
       amocrmSuccess: amocrmResult?.success || false,
-      amocrmLeadId: amocrmResult?.leadId,
-      webhookSuccess
+      amocrmLeadId: amocrmResult?.leadId
     })
 
     return NextResponse.json({
       success: true,
       message: 'Заявка успешно отправлена',
       amocrmSuccess: amocrmResult?.success || false,
-      amocrmLeadId: amocrmResult?.leadId,
-      webhookSuccess
+      amocrmLeadId: amocrmResult?.leadId
     })
 
   } catch (error) {
