@@ -49,10 +49,15 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
       leadData: { name, phone, direction, message }
     })
     
-    // Создаем простой лид без кастомных полей для начала
+    // Создаем лид с контактом (телефон)
     const leadData = {
       name: `Заявка от ${name} - ${direction}`,
-      price: 0
+      price: 0,
+      contacts: [
+        {
+          phone: phone
+        }
+      ]
     }
 
     console.log('Данные лида:', {
@@ -107,10 +112,20 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
     const result = await response.json()
     const lead = result?._embedded?.leads?.[0]
     
+    // Строим правильный URL для лида
+    let leadUrl = null
+    if (lead?.id) {
+      if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
+        leadUrl = `https://${AMOCRM_CONFIG.subdomain}/leads/detail/${lead.id}`
+      } else {
+        leadUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/leads/detail/${lead.id}`
+      }
+    }
+
     console.log('Лид успешно создан в AmoCRM:', {
       id: lead?.id,
       name: lead?.name,
-      url: lead?.id ? `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/leads/detail/${lead.id}` : null
+      url: leadUrl
     })
 
     return { 
