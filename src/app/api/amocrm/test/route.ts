@@ -28,7 +28,14 @@ export async function GET() {
 
     // Тестируем подключение к AmoCRM
     try {
-      const response = await fetch(`https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/account`, {
+      // Проверяем, содержит ли subdomain уже полный домен
+      const baseUrl = AMOCRM_CONFIG.subdomain.includes('.amocrm.ru') 
+        ? `https://${AMOCRM_CONFIG.subdomain}/api/v4/account`
+        : `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/account`
+      
+      console.log('AmoCRM test URL:', baseUrl)
+      
+      const response = await fetch(baseUrl, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,

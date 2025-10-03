@@ -74,7 +74,14 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
       })
     }
 
-    const response = await fetch(`https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`, {
+    // Проверяем, содержит ли subdomain уже полный домен
+    const baseUrl = AMOCRM_CONFIG.subdomain.includes('.amocrm.ru') 
+      ? `https://${AMOCRM_CONFIG.subdomain}/api/v4/leads`
+      : `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
+    
+    console.log('AmoCRM URL:', baseUrl)
+    
+    const response = await fetch(baseUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${AMOCRM_CONFIG.longToken}`,
@@ -143,7 +150,9 @@ async function sendLeadToWebhook(formData: FormData): Promise<boolean> {
         'X-Webhook-Signature': signature,
         'X-Webhook-Source': 'FitZone-Landing'
       },
-      body: JSON.stringify(leadData)
+      body: JSON.stringify(leadData),
+      // Добавляем опции для обработки SSL ошибок
+      signal: AbortSignal.timeout(10000) // 10 секунд таймаут
     })
 
     if (!response.ok) {
