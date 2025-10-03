@@ -81,12 +81,19 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
     if (AMOCRM_CONFIG.subdomain.includes('.amocrm.ru')) {
       // Если уже полный домен, используем как есть
       baseUrl = `https://${AMOCRM_CONFIG.subdomain}/api/v4/leads`
+      console.log('Используем полный домен:', AMOCRM_CONFIG.subdomain)
     } else {
       // Если только subdomain, добавляем .amocrm.ru
       baseUrl = `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
+      console.log('Добавляем .amocrm.ru к subdomain:', AMOCRM_CONFIG.subdomain)
     }
     
     console.log('AmoCRM URL:', baseUrl)
+    console.log('Проверка URL:', {
+      originalSubdomain: AMOCRM_CONFIG.subdomain,
+      containsAmocrm: AMOCRM_CONFIG.subdomain.includes('.amocrm.ru'),
+      finalUrl: baseUrl
+    })
     
     const response = await fetch(baseUrl, {
       method: 'POST',
@@ -103,7 +110,7 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
         status: response.status,
         statusText: response.statusText,
         error: errorText,
-        url: `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
+        url: baseUrl
       })
       return { 
         success: false, 
