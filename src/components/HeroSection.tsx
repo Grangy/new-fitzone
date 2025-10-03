@@ -111,15 +111,19 @@ export default function HeroSection() {
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         {isVideoPlaying && !videoError && !isMobile ? (
-          <OptimizedVideo
-            ref={videoRef}
-            src="/video.mp4"
-            poster="/video-poster.jpg"
-            className="w-full h-full object-cover"
-            onLoad={handleVideoLoad}
-            onError={handleVideoError}
-            autoPlay={true}
-          />
+          <>
+            <OptimizedVideo
+              ref={videoRef}
+              src="/video.mp4"
+              poster="/video-poster.jpg"
+              className="w-full h-full object-cover brightness-75"
+              onLoad={handleVideoLoad}
+              onError={handleVideoError}
+              autoPlay={true}
+            />
+            {/* Dark overlay for better text readability */}
+            <div className="absolute inset-0 bg-black bg-opacity-40 pointer-events-none" />
+          </>
         ) : (
           <div 
             className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black bg-cover bg-center"

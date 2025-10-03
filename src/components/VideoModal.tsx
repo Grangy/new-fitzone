@@ -165,7 +165,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     ref={videoRef}
                     src={videoSrc}
                     poster={poster}
-                    className="w-full h-full object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer brightness-75"
                     muted={true}
                     playsInline
                     preload="metadata"
@@ -178,6 +178,9 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     }}
                     onEnded={() => setIsPlaying(false)}
                   />
+                  
+                  {/* Dark overlay for better text readability */}
+                  <div className="absolute inset-0 bg-black bg-opacity-30 pointer-events-none" />
 
                   {/* Loading Overlay */}
                   {isLoading && (
