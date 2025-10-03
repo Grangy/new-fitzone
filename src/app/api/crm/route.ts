@@ -22,15 +22,38 @@ const WEBHOOK_CONFIG = {
 // Функция для создания лида в AmoCRM
 async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean; leadId?: number; error?: string }> {
   try {
-    const { name, phone, direction, message } = formData
+    // Проверяем конфигурацию AmoCRM
+    if (!AMOCRM_CONFIG.subdomain || AMOCRM_CONFIG.subdomain === 'your-subdomain') {
+      console.warn('AmoCRM не настроен: AMOCRM_SUBDOMAIN не указан')
+      return { 
+        success: false, 
+        error: 'AmoCRM не настроен: укажите AMOCRM_SUBDOMAIN' 
+      }
+    }
+
+    if (!AMOCRM_CONFIG.longToken || AMOCRM_CONFIG.longToken === 'your-long-token') {
+      console.warn('AmoCRM не настроен: AMOCRM_LONG_TOKEN не указан')
+      return { 
+        success: false, 
+        error: 'AmoCRM не настроен: укажите AMOCRM_LONG_TOKEN' 
+      }
+    }
+
+  const { name, phone, direction, message } = formData
+
+    console.log('Создание лида в AmoCRM:', {
+      subdomain: AMOCRM_CONFIG.subdomain,
+      hasToken: !!AMOCRM_CONFIG.longToken,
+      leadData: { name, phone, direction, message }
+    })
     
     const leadData = {
       name: `Заявка от ${name} - ${direction}`,
       price: 0,
-      custom_fields_values: [
-        {
+    custom_fields_values: [
+      {
           field_id: 264911, // ID поля "Телефон"
-          values: [{ value: phone }]
+        values: [{ value: phone }]
         },
         {
           field_id: 264913, // ID поля "Направление тренировки"
@@ -62,10 +85,15 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Ошибка AmoCRM API:', response.status, errorText)
+      console.error('Ошибка AmoCRM API:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+        url: `https://${AMOCRM_CONFIG.subdomain}.amocrm.ru/api/v4/leads`
+      })
       return { 
         success: false, 
-        error: `AmoCRM API error: ${response.status}` 
+        error: `AmoCRM API error: ${response.status} - ${errorText}` 
       }
     }
 
