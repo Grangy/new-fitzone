@@ -49,32 +49,18 @@ async function createAmoCRMLead(formData: FormData): Promise<{ success: boolean;
       leadData: { name, phone, direction, message }
     })
     
+    // Создаем простой лид без кастомных полей для начала
     const leadData = {
       name: `Заявка от ${name} - ${direction}`,
-      price: 0,
-    custom_fields_values: [
-      {
-          field_id: 264911, // ID поля "Телефон"
-        values: [{ value: phone }]
-        },
-        {
-          field_id: 264913, // ID поля "Направление тренировки"
-          values: [{ value: direction }]
-        },
-        {
-          field_id: 264915, // ID поля "Источник"
-          values: [{ value: 'FitZone Landing' }]
-        }
-      ]
+      price: 0
     }
 
-    // Добавляем сообщение как примечание, если есть
-    if (message) {
-      leadData.custom_fields_values.push({
-        field_id: 264917, // ID поля "Комментарий" (настройте в AmoCRM)
-        values: [{ value: message }]
-      })
-    }
+    console.log('Данные лида:', {
+      name: leadData.name,
+      phone: phone,
+      direction: direction,
+      message: message
+    })
 
     // Проверяем, содержит ли subdomain уже полный домен
     let baseUrl
