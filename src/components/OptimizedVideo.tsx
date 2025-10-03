@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { motion } from 'framer-motion'
 
 interface OptimizedVideoProps {
@@ -9,18 +9,25 @@ interface OptimizedVideoProps {
   className?: string
   onLoad?: () => void
   onError?: () => void
+  autoPlay?: boolean
 }
 
-export default function OptimizedVideo({ 
+interface OptimizedVideoRef {
+  playVideo: () => void
+}
+
+const OptimizedVideo = forwardRef<OptimizedVideoRef, OptimizedVideoProps>(({ 
   src, 
   poster, 
   className = '', 
   onLoad, 
-  onError 
-}: OptimizedVideoProps) {
+  onError,
+  autoPlay = false
+}, ref) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [isInView, setIsInView] = useState(false)
+  const [shouldPlay, setShouldPlay] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
 
@@ -66,10 +73,24 @@ export default function OptimizedVideo({
 
   const handleCanPlay = () => {
     // Видео готово к воспроизведению
-    if (videoRef.current) {
+    if (videoRef.current && (autoPlay || shouldPlay)) {
       videoRef.current.play().catch(console.error)
     }
   }
+
+  // Effect to handle play when shouldPlay changes
+  useEffect(() => {
+    if (shouldPlay && videoRef.current && isLoaded) {
+      videoRef.current.play().catch(console.error)
+    }
+  }, [shouldPlay, isLoaded])
+
+  // Expose play method to parent component
+  useImperativeHandle(ref, () => ({
+    playVideo: () => {
+      setShouldPlay(true)
+    }
+  }), [])
 
   return (
     <div className="relative w-full h-full">
@@ -132,4 +153,9 @@ export default function OptimizedVideo({
       )}
     </div>
   )
-}
+})
+
+OptimizedVideo.displayName = 'OptimizedVideo'
+
+export default OptimizedVideo
+

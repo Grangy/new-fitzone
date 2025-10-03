@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Play, ChevronDown } from 'lucide-react'
 import { motion } from 'framer-motion'
 import BookingModal from './BookingModal'
@@ -13,6 +13,9 @@ export default function HeroSection() {
   const [isSticky, setIsSticky] = useState(false)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [videoError, setVideoError] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [userInteracted, setUserInteracted] = useState(false)
+  const videoRef = useRef<{ playVideo: () => void } | null>(null)
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -26,6 +29,9 @@ export default function HeroSection() {
   const handleVideoPlay = () => {
     if (!isVideoLoaded && !videoError) {
       setIsVideoPlaying(true)
+      setUserInteracted(true)
+    } else if (videoRef.current && videoRef.current.playVideo) {
+      videoRef.current.playVideo()
     }
   }
 
@@ -62,17 +68,49 @@ export default function HeroSection() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Detect mobile device and auto-play logic
+  useEffect(() => {
+    const checkDevice = () => {
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                            window.innerWidth <= 768 || 
+                            ('ontouchstart' in window)
+      setIsMobile(isMobileDevice)
+      
+      // Auto-play on desktop, manual play on mobile
+      if (!isMobileDevice && !userInteracted) {
+        // Small delay to ensure page is loaded
+        const timer = setTimeout(() => {
+          setIsVideoPlaying(true)
+        }, 1000)
+        return () => clearTimeout(timer)
+      }
+    }
+
+    checkDevice()
+    
+    // Re-check on resize
+    const handleResize = () => {
+      const isMobileDevice = window.innerWidth <= 768
+      setIsMobile(isMobileDevice)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [userInteracted])
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         {isVideoPlaying && !videoError ? (
           <OptimizedVideo
+            ref={videoRef}
             src="/video.mp4"
             poster="/video-poster.jpg"
             className="w-full h-full object-cover"
             onLoad={handleVideoLoad}
             onError={handleVideoError}
+            autoPlay={!isMobile}
           />
         ) : (
           <div 
@@ -243,8 +281,8 @@ export default function HeroSection() {
           </button>
         </motion.div>
 
-        {/* Play Video Button */}
-        {!isVideoPlaying && !videoError && (
+        {/* Play Video Button - Only show on mobile or when video is not playing */}
+        {((isMobile && !isVideoPlaying) || (!isMobile && !isVideoPlaying && !userInteracted)) && !videoError && (
           <motion.button
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -255,7 +293,9 @@ export default function HeroSection() {
             <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center backdrop-blur-sm hover:bg-opacity-30 transition-all duration-300">
               <Play className="w-6 h-6 ml-1" fill="currentColor" />
             </div>
-            <span className="text-lg font-medium">Посмотреть видео о клубе</span>
+            <span className="text-lg font-medium">
+              {isMobile ? 'Посмотреть видео о клубе' : 'Воспроизвести видео'}
+            </span>
           </motion.button>
         )}
       </div>
