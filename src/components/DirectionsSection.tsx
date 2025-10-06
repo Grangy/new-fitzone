@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle } from 'lucide-react'
+import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle, X } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
 import FitnessQuiz from './FitnessQuiz'
@@ -443,7 +443,7 @@ export default function DirectionsSection() {
                   onClick={() => setIsDetailsModalOpen(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  <ArrowRight className="w-6 h-6 rotate-45" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
