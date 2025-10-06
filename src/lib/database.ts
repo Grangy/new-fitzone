@@ -104,6 +104,58 @@ class Database {
         )
       `);
 
+      // Таблицы для квиза
+      await run(`
+        CREATE TABLE IF NOT EXISTS quiz_questions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          question TEXT NOT NULL,
+          question_type TEXT NOT NULL DEFAULT 'single',
+          order_index INTEGER NOT NULL,
+          is_active BOOLEAN DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      await run(`
+        CREATE TABLE IF NOT EXISTS quiz_answers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          question_id INTEGER NOT NULL,
+          answer_text TEXT NOT NULL,
+          answer_value TEXT NOT NULL,
+          order_index INTEGER NOT NULL,
+          is_active BOOLEAN DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (question_id) REFERENCES quiz_questions (id) ON DELETE CASCADE
+        )
+      `);
+
+      await run(`
+        CREATE TABLE IF NOT EXISTS quiz_recommendations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          description TEXT NOT NULL,
+          conditions TEXT NOT NULL,
+          trainer_ids TEXT,
+          direction_ids TEXT,
+          club_ids TEXT,
+          priority INTEGER DEFAULT 1,
+          is_active BOOLEAN DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      await run(`
+        CREATE TABLE IF NOT EXISTS quiz_results (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          session_id TEXT NOT NULL,
+          answers TEXT NOT NULL,
+          recommendations TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
       console.log('Database initialized successfully');
     } catch (error) {
       console.error('Error initializing database:', error);

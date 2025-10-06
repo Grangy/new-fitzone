@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle, X } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
-import FitnessQuiz from './FitnessQuiz'
+import QuizNew from './QuizNew'
 import ScheduleModal from './ScheduleModal'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 import { useClub } from '../contexts/ClubContext'
@@ -454,7 +454,7 @@ export default function DirectionsSection() {
             >
               <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            <FitnessQuiz
+            <QuizNew
               onComplete={handleQuizComplete}
               onBooking={handleQuizBooking}
             />

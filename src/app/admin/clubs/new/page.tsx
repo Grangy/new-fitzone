@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ImageUpload from '@/components/ImageUpload';
 
 export default function NewClubPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function NewClubPage() {
     description: '',
     photos: []
   });
+  const [photos, setPhotos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -29,7 +31,10 @@ export default function NewClubPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          photos: photos
+        }),
       });
 
       if (response.ok) {
@@ -204,6 +209,38 @@ export default function NewClubPage() {
                 placeholder="Современный фитнес-клуб в центре города с полным спектром услуг"
               />
             </div>
+          </div>
+        </div>
+
+        <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Фотографии клуба</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {photos.map((photo, index) => (
+              <div key={index} className="relative">
+                <ImageUpload
+                  value={photo}
+                  onChange={(url) => {
+                    const newPhotos = [...photos];
+                    newPhotos[index] = url;
+                    setPhotos(newPhotos);
+                  }}
+                  onRemove={() => {
+                    const newPhotos = photos.filter((_, i) => i !== index);
+                    setPhotos(newPhotos);
+                  }}
+                  type="club"
+                  className="w-full h-48"
+                />
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setPhotos([...photos, ''])}
+              className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors flex flex-col items-center justify-center"
+            >
+              <span className="text-gray-500 text-lg">+</span>
+              <span className="text-gray-500 text-sm mt-2">Добавить фотографию</span>
+            </button>
           </div>
         </div>
 

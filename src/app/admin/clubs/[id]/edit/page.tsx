@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import ImageUpload from '@/components/ImageUpload';
 
 interface Club {
   id: string;
@@ -246,42 +247,38 @@ export default function EditClubPage({ params }: { params: Promise<{ id: string 
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700 mb-4">
                 Фотографии
               </label>
-              <div className="mt-1 flex gap-2">
-                <input
-                  type="url"
-                  className="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                  value={photoInput}
-                  onChange={(e) => setPhotoInput(e.target.value)}
-                  placeholder="https://example.com/photo.jpg"
-                />
-                <button
-                  type="button"
-                  onClick={addPhoto}
-                  className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  Добавить
-                </button>
-              </div>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {formData.photos.map((photo, index) => (
                   <div key={index} className="relative">
-                    <img
-                      src={photo}
-                      alt={`Фото ${index + 1}`}
-                      className="w-full h-24 object-cover rounded-md"
+                    <ImageUpload
+                      value={photo}
+                      onChange={(url) => {
+                        const newPhotos = [...formData.photos];
+                        newPhotos[index] = url;
+                        setFormData(prev => ({ ...prev, photos: newPhotos }));
+                      }}
+                      onRemove={() => removePhoto(index)}
+                      type="club"
+                      className="w-full h-48"
                     />
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(index)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
-                    >
-                      ×
-                    </button>
                   </div>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({
+                      ...prev,
+                      photos: [...prev.photos, '']
+                    }));
+                  }}
+                  className="w-full h-48 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors flex flex-col items-center justify-center"
+                >
+                  <span className="text-gray-500 text-lg">+</span>
+                  <span className="text-gray-500 text-sm mt-2">Добавить фотографию</span>
+                </button>
               </div>
             </div>
           </div>

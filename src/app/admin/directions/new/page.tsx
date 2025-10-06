@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import ImageUpload from '@/components/ImageUpload';
 
 interface Club {
   id: string;
@@ -207,19 +208,19 @@ export default function NewDirectionPage() {
               </select>
             </div>
 
-            <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-                URL изображения
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-4">
+                Изображение направления
               </label>
-              <input
-                type="url"
-                name="image"
-                id="image"
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="https://example.com/image.jpg"
-              />
+              <div className="flex justify-center">
+                <ImageUpload
+                  value={formData.image}
+                  onChange={(url) => setFormData(prev => ({ ...prev, image: url }))}
+                  onRemove={() => setFormData(prev => ({ ...prev, image: '' }))}
+                  type="direction"
+                  className="w-64 h-64"
+                />
+              </div>
             </div>
 
             <div>
