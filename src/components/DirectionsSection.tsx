@@ -1,68 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
 import FitnessQuiz from './FitnessQuiz'
+import ScheduleModal from './ScheduleModal'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
-
-const directions = [
-  {
-    title: 'Йога',
-    description: 'Гармония тела и духа. Улучши гибкость, силу и найди внутренний баланс.',
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    price: 'от 800₽',
-    duration: '60 мин',
-    level: 'Для всех уровней'
-  },
-  {
-    title: 'Пилатес',
-    description: 'Укрепи мышцы кора, улучши осанку и координацию движений.',
-    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    price: 'от 900₽',
-    duration: '55 мин',
-    level: 'Начинающий-средний'
-  },
-  {
-    title: 'Кроссфит',
-    description: 'Высокоинтенсивные функциональные тренировки для максимального результата.',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    price: 'от 1200₽',
-    duration: '60 мин',
-    level: 'Средний-продвинутый'
-  },
-  {
-    title: 'Персональные тренировки',
-    description: 'Индивидуальный подход, персональная программа и максимальное внимание тренера.',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    price: 'от 2500₽',
-    duration: '60 мин',
-    level: 'Любой уровень'
-  },
-  {
-    title: 'Групповые программы',
-    description: 'Мотивация в команде единомышленников. Зумба, аэробика, степ и многое другое.',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    price: 'от 600₽',
-    duration: '45-60 мин',
-    level: 'Для всех'
-  },
-  {
-    title: 'Функциональный тренинг',
-    description: 'Развитие силы, выносливости и координации через естественные движения.',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-    price: 'от 1000₽',
-    duration: '50 мин',
-    level: 'Средний'
-  }
-]
+import { useClub } from '../contexts/ClubContext'
+import { useForceUpdate } from '../hooks/useForceUpdate'
 
 export default function DirectionsSection() {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
   const [selectedDirection, setSelectedDirection] = useState('')
   const [showQuiz, setShowQuiz] = useState(false)
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
+  const [selectedDirectionId, setSelectedDirectionId] = useState('')
   const [quizResult, setQuizResult] = useState<{
     direction: string;
     score: number;
@@ -71,6 +25,22 @@ export default function DirectionsSection() {
   } | null>(null)
   const { getAnimationConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
+  const { selectedClub } = useClub()
+  const forceUpdate = useForceUpdate()
+
+  // Listen for club changes to trigger re-render
+  useEffect(() => {
+    const handleClubChange = () => {
+      // Force re-render when club changes
+      setSelectedDirection('')
+      setQuizResult(null)
+      forceUpdate()
+    }
+
+    window.addEventListener('clubChanged', handleClubChange)
+    return () => window.removeEventListener('clubChanged', handleClubChange)
+  }, [forceUpdate])
+
 
 
   const handleBookingClick = (directionTitle: string) => {
@@ -93,6 +63,11 @@ export default function DirectionsSection() {
     setIsBookingModalOpen(true)
   }
 
+  const handleScheduleClick = (directionId: string) => {
+    setSelectedDirectionId(directionId)
+    setIsScheduleModalOpen(true)
+  }
+
   return (
     <section id="directions" className="section-padding bg-white">
       <div className="container-custom">
@@ -106,9 +81,14 @@ export default function DirectionsSection() {
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
             Направления <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">тренировок</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             Выбери то, что подходит именно тебе. Каждое направление ведут профессиональные тренеры
           </p>
+          <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+            <p className="text-orange-800 font-medium">
+              📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
+            </p>
+          </div>
           
           {/* Quiz Button */}
           <motion.button
@@ -139,7 +119,7 @@ export default function DirectionsSection() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {directions.map((direction, index) => (
+          {selectedClub.directions.map((direction, index) => (
             <motion.div
               key={index}
               initial={animationConfig.initial}
@@ -178,6 +158,23 @@ export default function DirectionsSection() {
                   <span>📊 {direction.level}</span>
                 </div>
                 
+                {direction.schedule && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 mb-2">Расписание:</p>
+                    <div className="space-y-1">
+                      {direction.schedule.map((time, timeIndex) => (
+                        <p key={timeIndex} className="text-xs text-gray-500">{time}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {direction.trainer && (
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600">Тренер: <span className="font-medium text-orange-600">{direction.trainer}</span></p>
+                  </div>
+                )}
+                
                 <div className="flex gap-3">
                   <button 
                     onClick={() => handleBookingClick(direction.title)}
@@ -185,7 +182,11 @@ export default function DirectionsSection() {
                   >
                     Записаться
                   </button>
-                  <button className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group">
+                  <button 
+                    onClick={() => handleScheduleClick(direction.id)}
+                    className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
+                    title="Посмотреть расписание"
+                  >
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </button>
                 </div>
@@ -240,6 +241,13 @@ export default function DirectionsSection() {
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
         selectedDirection={selectedDirection}
+      />
+
+      {/* Schedule Modal */}
+      <ScheduleModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        directionId={selectedDirectionId}
       />
     </section>
   )

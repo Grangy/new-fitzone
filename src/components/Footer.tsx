@@ -1,26 +1,46 @@
 'use client'
 
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, MessageCircle } from 'lucide-react'
+import { Phone, Mail, MapPin, Instagram, Facebook, MessageCircle, Send } from 'lucide-react'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
+import { useClub } from '../contexts/ClubContext'
+import { useForceUpdate } from '../hooks/useForceUpdate'
+import Image from 'next/image'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   const { getAnimationConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
+  const { selectedClub } = useClub()
+  const forceUpdate = useForceUpdate()
+
+  // Listen for club changes to trigger re-render
+  useEffect(() => {
+    const handleClubChange = () => {
+      // Force re-render when club changes
+      forceUpdate()
+    }
+
+    window.addEventListener('clubChanged', handleClubChange)
+    return () => window.removeEventListener('clubChanged', handleClubChange)
+  }, [forceUpdate])
+
 
   const socialLinks = [
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Youtube, href: '#', label: 'YouTube' },
-    { icon: MessageCircle, href: '#', label: 'Telegram' }
+    { icon: MessageCircle, href: selectedClub.whatsapp, label: 'WhatsApp' },
+    { icon: Send, href: selectedClub.telegram, label: 'Telegram' },
+    { icon: Instagram, href: selectedClub.instagram, label: 'Instagram' },
+    { icon: Facebook, href: selectedClub.vk, label: 'VKontakte' }
   ]
 
   const quickLinks = [
+    { name: 'Главная', href: '#home' },
+    { name: 'Преимущества', href: '#advantages' },
     { name: 'Направления', href: '#directions' },
     { name: 'Тренеры', href: '#trainers' },
-    { name: 'Цены', href: '#pricing' },
     { name: 'Отзывы', href: '#reviews' },
+    { name: 'Галерея', href: '#gallery' },
     { name: 'Контакты', href: '#contact-form' }
   ]
 
@@ -43,8 +63,13 @@ export default function Footer() {
             className="lg:col-span-2 motion-safe"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">FZ</span>
+              <div className="relative w-16 h-6">
+                <Image
+                  src="/logo.png"
+                  alt="FitZone Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
               <h3 className="text-2xl font-bold">FitZone</h3>
             </div>
@@ -56,7 +81,9 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-orange-400" />
-                <span>+7 (8617) 123-45-67</span>
+                <a href={`tel:${selectedClub.phone}`} className="hover:text-orange-400 transition-colors">
+                  {selectedClub.phone}
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-orange-400" />
@@ -64,7 +91,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-orange-400" />
-                <span>г. Новороссийск, ул. Советов, 10</span>
+                <span>{selectedClub.address}</span>
               </div>
             </div>
           </motion.div>
@@ -125,7 +152,7 @@ export default function Footer() {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-orange-500 transition-colors duration-300 group"
+                  className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors duration-300 group"
                 >
                   <social.icon className="w-5 h-5 text-gray-300 group-hover:text-white" />
                 </a>

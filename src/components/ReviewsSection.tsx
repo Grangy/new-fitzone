@@ -4,9 +4,7 @@ import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Star, Quote } from 'lucide-react'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
-import { useClub } from '../contexts/ClubContext'
 import { useForceUpdate } from '../hooks/useForceUpdate'
-import Image from 'next/image'
 
 const testimonials = [
   {
@@ -14,34 +12,59 @@ const testimonials = [
     age: 28,
     text: 'Наконец-то нашла место, где можно заниматься без переплат за ненужные услуги. Хожу на йогу уже 3 месяца — результат потрясающий!',
     rating: 5,
-    program: 'Йога'
+    program: 'Йога',
+    club: 'ул. Пионерская'
   },
   {
     name: 'Алексей Козлов',
     age: 35,
     text: 'Персональные тренировки с Еленой изменили мою жизнь. Сбросил 15 кг за полгода и чувствую себя на 10 лет моложе!',
     rating: 5,
-    program: 'Персональные тренировки'
+    program: 'Персональные тренировки',
+    club: 'ул. Мира'
   },
   {
     name: 'Ольга Петренко',
     age: 42,
     text: 'Групповые занятия — это невероятная энергия! Команда поддерживает, тренер мотивирует. Уже год не пропускаю ни одной тренировки.',
     rating: 5,
-    program: 'Групповые программы'
+    program: 'Групповые программы',
+    club: 'ул. Пионерская'
+  },
+  {
+    name: 'Дмитрий Соколов',
+    age: 31,
+    text: 'Кроссфит в FitZone — это адреналин и результат! Тренер Дмитрий профессионал своего дела. Рекомендую всем!',
+    rating: 5,
+    program: 'Кроссфит',
+    club: 'ул. Пионерская'
+  },
+  {
+    name: 'Анна Волкова',
+    age: 26,
+    text: 'Пилатес помог мне восстановиться после родов. Тренер Михаил очень внимательный и профессиональный.',
+    rating: 5,
+    program: 'Пилатес',
+    club: 'ул. Мира'
+  },
+  {
+    name: 'Сергей Морозов',
+    age: 45,
+    text: 'Функциональный тренинг — это то, что нужно для активной жизни. Чувствую себя молодым и энергичным!',
+    rating: 5,
+    program: 'Функциональный тренинг',
+    club: 'ул. Мира'
   }
 ]
 
-export default function SocialProofSection() {
+export default function ReviewsSection() {
   const { getAnimationConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
-  const { selectedClub } = useClub()
   const forceUpdate = useForceUpdate()
 
   // Listen for club changes to trigger re-render
   useEffect(() => {
     const handleClubChange = () => {
-      // Force re-render when club changes
       forceUpdate()
     }
 
@@ -49,102 +72,15 @@ export default function SocialProofSection() {
     return () => window.removeEventListener('clubChanged', handleClubChange)
   }, [forceUpdate])
 
-
   return (
-    <section id="trainers" className="section-padding bg-gray-50">
+    <section id="reviews" className="section-padding bg-gray-50">
       <div className="container-custom">
-        {/* Trainers Section */}
         <motion.div
           initial={animationConfig.initial}
           whileInView={{ opacity: 1, y: 0 }}
           transition={animationConfig.transition}
           viewport={animationConfig.viewport}
           className="text-center mb-16 motion-safe"
-        >
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-            Наши <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">тренеры</span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
-            Профессионалы с международными сертификатами и многолетним опытом
-          </p>
-          <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-            <p className="text-orange-800 font-medium">
-              📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
-            </p>
-          </div>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          {selectedClub.trainers.map((trainer, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group"
-            >
-              <div className="relative">
-                <Image
-                  src={trainer.image}
-                  alt={trainer.name}
-                  width={400}
-                  height={256}
-                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {trainer.name}
-                </h3>
-                <p className="text-orange-500 font-semibold mb-2">
-                  {trainer.specialty}
-                </p>
-                <p className="text-gray-600 mb-4">
-                  {trainer.experience}
-                </p>
-                
-                <div className="flex flex-wrap gap-2">
-                  {trainer.certifications.map((cert, certIndex) => (
-                    <span
-                      key={certIndex}
-                      className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full"
-                    >
-                      {cert}
-                    </span>
-                  ))}
-                </div>
-                
-                {trainer.bio && (
-                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                    {trainer.bio}
-                  </p>
-                )}
-                
-                {trainer.schedule && (
-                  <div className="mt-3">
-                    <p className="text-sm text-gray-600 mb-1">Расписание:</p>
-                    <div className="space-y-1">
-                      {trainer.schedule.map((time, timeIndex) => (
-                        <p key={timeIndex} className="text-xs text-gray-500">{time}</p>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Testimonials Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
             Отзывы <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">клиентов</span>
@@ -154,7 +90,7 @@ export default function SocialProofSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={index}
@@ -180,6 +116,9 @@ export default function SocialProofSection() {
                   </h4>
                   <p className="text-sm text-gray-500">
                     {testimonial.age} лет • {testimonial.program}
+                  </p>
+                  <p className="text-xs text-orange-600 mt-1">
+                    {testimonial.club}
                   </p>
                 </div>
                 

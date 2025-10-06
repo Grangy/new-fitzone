@@ -6,27 +6,39 @@ import { motion } from 'framer-motion'
 import BookingModal from './BookingModal'
 import OptimizedVideo from './OptimizedVideo'
 import VideoModal from './VideoModal'
+import { useClub } from '../contexts/ClubContext'
+import { useForceUpdate } from '../hooks/useForceUpdate'
+import Image from 'next/image'
 
 export default function HeroSection() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false)
-  const [isBannerVisible, setIsBannerVisible] = useState(true)
-  const [isSticky, setIsSticky] = useState(false)
   const [isVideoLoaded, setIsVideoLoaded] = useState(false)
   const [videoError, setVideoError] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [userInteracted, setUserInteracted] = useState(false)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const videoRef = useRef<{ playVideo: () => void } | null>(null)
+  const { selectedClub } = useClub()
+  const forceUpdate = useForceUpdate()
+
+  // Listen for club changes to trigger re-render
+  useEffect(() => {
+    const handleClubChange = () => {
+      // Force re-render when club changes
+      forceUpdate()
+    }
+
+    window.addEventListener('clubChanged', handleClubChange)
+    return () => window.removeEventListener('clubChanged', handleClubChange)
+  }, [forceUpdate])
+
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     element?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const handleBannerClick = () => {
-    setIsBookingModalOpen(true)
-  }
 
   const handleVideoPlay = () => {
     if (isMobile) {
@@ -52,29 +64,6 @@ export default function HeroSection() {
     setIsVideoPlaying(false)
   }
 
-  const closeBanner = () => {
-    setIsBannerVisible(false)
-  }
-
-  // Sticky banner logic
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY
-      setIsSticky(scrollY > 100)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  // Auto-hide banner after 15 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsBannerVisible(false)
-    }, 15000)
-
-    return () => clearTimeout(timer)
-  }, [])
 
   // Detect mobile device and auto-play logic
   useEffect(() => {
@@ -107,7 +96,7 @@ export default function HeroSection() {
   }, [userInteracted])
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
       <div className="absolute inset-0 z-0">
         {isVideoPlaying && !videoError && !isMobile ? (
@@ -139,124 +128,6 @@ export default function HeroSection() {
         <div className="absolute inset-0 video-overlay" />
       </div>
 
-      {/* Enhanced Mobile Promotional Banner */}
-      {isBannerVisible && (
-        <>
-          {/* Main Banner */}
-          <motion.div 
-            initial={{ opacity: 0, y: -50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -50, scale: 0.9 }}
-            transition={{ 
-              duration: 0.8, 
-              type: "spring", 
-              stiffness: 100,
-              delay: 0.5 
-            }}
-            className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 px-3 sm:px-0"
-          >
-            <motion.button
-              onClick={handleBannerClick}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              className="group relative bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white px-4 sm:px-6 py-3 sm:py-2 rounded-2xl sm:rounded-full text-xs sm:text-sm font-bold shadow-2xl border-2 border-white/20 backdrop-blur-sm hover:shadow-orange-500/25 transition-all duration-300 cursor-pointer touch-manipulation min-h-[44px] flex items-center justify-center"
-              style={{
-                background: 'linear-gradient(135deg, #f97316 0%, #ef4444 50%, #f97316 100%)',
-                boxShadow: '0 8px 32px rgba(249, 115, 22, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-              }}
-            >
-              {/* Pulsing animation */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl sm:rounded-full bg-white/20"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.1, 0.3]
-                }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-              
-              {/* Fire emoji with animation */}
-              <motion.span 
-                className="text-base sm:text-sm mr-2"
-                animate={{ 
-                  rotate: [0, 10, -10, 0],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{ 
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                🔥
-              </motion.span>
-              
-              {/* Text with responsive sizing */}
-              <span className="relative z-10 text-center leading-tight">
-                <span className="block sm:inline font-extrabold text-shadow">
-                  Скидка 30%
-                </span>
-                <span className="block sm:inline sm:ml-1 font-medium opacity-95">
-                  на первый месяц!
-                </span>
-              </span>
-              
-              {/* Shimmer effect */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl sm:rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "linear",
-                  delay: 1
-                }}
-                style={{ clipPath: 'inset(0)' }}
-              />
-              
-              {/* Close button for mobile */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  closeBanner()
-                }}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-gray-800/80 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-700 transition-colors sm:hidden"
-              >
-                ×
-              </button>
-            </motion.button>
-          </motion.div>
-
-          {/* Sticky Banner for scroll */}
-          {isSticky && (
-            <motion.div
-              initial={{ opacity: 0, y: -100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -100 }}
-              className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 px-4 text-center text-sm font-semibold shadow-lg"
-            >
-              <button
-                onClick={handleBannerClick}
-                className="flex items-center justify-center gap-2 w-full hover:opacity-90 transition-opacity"
-              >
-                <span>🔥</span>
-                <span>Скидка 30% на первый месяц тренировок!</span>
-                <span className="text-xs opacity-75">Нажми для записи</span>
-              </button>
-              <button
-                onClick={closeBanner}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white text-lg"
-              >
-                ×
-              </button>
-            </motion.div>
-          )}
-        </>
-      )}
 
       {/* Main Content */}
       <div className="relative z-10 text-center text-white container-custom">
@@ -265,12 +136,38 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
         >
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mb-8"
+          >
+            <div className="relative w-32 h-12 md:w-40 md:h-16 mx-auto">
+              <Image
+                src="/logo.png"
+                alt="FitZone Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </motion.div>
+          
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
             Фитнес без <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">клубной карты</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
             Только то, что нужно тебе. Выбирай направления, тренеров и время — плати только за результат
           </p>
+          <div className="mb-8">
+            <p className="text-lg text-gray-300 mb-2">
+              📍 {selectedClub.address}
+            </p>
+            <p className="text-sm text-gray-400">
+              {selectedClub.description}
+            </p>
+          </div>
         </motion.div>
 
         <motion.div

@@ -1,0 +1,30 @@
+{
+  "name": "FitZone Новороссийск",
+  "short_name": "FitZone",
+  "description": "Современный фитнес-клуб в Новороссийске. Йога, пилатес, кроссфит, персональные тренировки.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["fitness", "sports", "health"],
+  "lang": "ru",
+  "dir": "ltr"
+}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import { siteConfig } from "../lib/siteConfig";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -9,54 +10,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FitZone Новороссийск | Фитнес без клубной карты",
-  description: "Современный фитнес-клуб в Новороссийске. Йога, пилатес, кроссфит, персональные тренировки. Плати только за то, что нужно тебе. Запись онлайн.",
-  keywords: "фитнес, спортзал, йога, пилатес, кроссфит, тренировки, Новороссийск, персональный тренер",
-  authors: [{ name: "FitZone" }],
-  creator: "FitZone",
-  publisher: "FitZone",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL("https://fitzone-nsk.ru"),
+  title: siteConfig.site.title,
+  description: siteConfig.site.description,
+  keywords: siteConfig.site.keywords,
+  authors: [{ name: siteConfig.site.author }],
+  creator: siteConfig.site.creator,
+  publisher: siteConfig.site.publisher,
+  formatDetection: siteConfig.meta.formatDetection,
+  metadataBase: new URL(siteConfig.site.url),
   alternates: {
     canonical: "/",
   },
-  openGraph: {
-    title: "FitZone Новороссийск | Фитнес без клубной карты",
-    description: "Современный фитнес-клуб в Новороссийске. Выбирай направления, тренеров и время — плати только за результат.",
-    url: "https://fitzone-nsk.ru",
-    siteName: "FitZone",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "FitZone - Фитнес без клубной карты",
-      },
-    ],
-    locale: "ru_RU",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "FitZone Новороссийск | Фитнес без клубной карты",
-    description: "Современный фитнес-клуб в Новороссийске. Выбирай направления, тренеров и время — плати только за результат.",
-    images: ["/og-image.jpg"],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  openGraph: siteConfig.meta.openGraph,
+  twitter: siteConfig.meta.twitter,
+  robots: siteConfig.meta.robots,
 };
 
 export default function RootLayout({
@@ -74,7 +41,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#f97316" />
+        <meta name="theme-color" content={siteConfig.settings.themeColor} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${inter.className} antialiased`}>
@@ -119,29 +86,7 @@ export default function RootLayout({
           id="structured-data"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SportsActivityLocation",
-              "name": "FitZone",
-              "image": "https://fitzone-nsk.ru/og-image.jpg",
-              "description": "Современный фитнес-клуб в Новороссийске. Йога, пилатес, кроссфит, персональные тренировки.",
-              "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "ул. Советов, 10",
-                "addressLocality": "Новороссийск",
-                "addressRegion": "Краснодарский край",
-                "addressCountry": "RU"
-              },
-              "telephone": "+7 (8617) 123-45-67",
-              "email": "info@fitzone-nsk.ru",
-              "url": "https://fitzone-nsk.ru",
-              "openingHours": "Mo-Su 06:00-23:00",
-              "priceRange": "₽₽",
-              "sameAs": [
-                "https://instagram.com/fitzone_nsk",
-                "https://vk.com/fitzone_nsk"
-              ]
-            })
+            __html: JSON.stringify(siteConfig.structuredData)
           }}
         />
       </body>
