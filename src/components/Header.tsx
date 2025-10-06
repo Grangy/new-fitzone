@@ -51,8 +51,7 @@ export default function Header() {
 
   const navigationItems = [
     { name: 'Главная', href: 'home' },
-    { name: 'Групповые', href: 'directions' },
-    { name: 'Индивидуальные', href: 'individual-trainings' },
+    { name: 'Тренировки', href: 'directions' },
     { name: 'Контакты', href: 'contact-form' }
   ]
 

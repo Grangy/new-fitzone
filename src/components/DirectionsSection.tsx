@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Download, ExternalLink } from 'lucide-react'
+import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
 import FitnessQuiz from './FitnessQuiz'
@@ -96,10 +96,10 @@ export default function DirectionsSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-            Групповые <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">тренировки</span>
+            Наши <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">тренировки</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
-            Выбери то, что подходит именно тебе. Каждое направление ведут профессиональные тренеры
+            Групповые и индивидуальные тренировки. Выбери то, что подходит именно тебе
           </p>
           <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
             <p className="text-orange-800 font-medium">
@@ -179,8 +179,11 @@ export default function DirectionsSection() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {selectedClub.directions.map((direction, index) => (
+        {/* Group Trainings */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Групповые тренировки</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {selectedClub.directions.map((direction, index) => (
             <motion.div
               key={index}
               initial={animationConfig.initial}
@@ -253,7 +256,98 @@ export default function DirectionsSection() {
                 </div>
               </div>
             </motion.div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Individual Trainings */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Индивидуальные тренировки</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {selectedClub.trainers.map((trainer, index) => (
+              <motion.div
+                key={trainer.id}
+                initial={animationConfig.initial}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  ...animationConfig.transition,
+                  delay: index * (animationConfig.transition.duration * 0.1)
+                }}
+                viewport={animationConfig.viewport}
+                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe"
+              >
+                <div className="relative overflow-hidden">
+                  <Image
+                    src={trainer.image}
+                    alt={trainer.name}
+                    width={400}
+                    height={300}
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-semibold text-gray-900">
+                    {trainer.experience}
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <h4 className="text-xl font-bold text-gray-900 mb-2">
+                    {trainer.name}
+                  </h4>
+                  <p className="text-orange-600 font-semibold mb-4">
+                    {trainer.specialty}
+                  </p>
+                  <p className="text-gray-600 mb-4 leading-relaxed text-sm">
+                    {trainer.bio}
+                  </p>
+                  
+                  {/* Certifications */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-medium text-gray-700">Сертификации:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {trainer.certifications.slice(0, 2).map((cert, certIndex) => (
+                        <span 
+                          key={certIndex}
+                          className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full"
+                        >
+                          {cert}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={handleAppDownload}
+                      className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
+                    >
+                      Записаться в приложении
+                    </button>
+                    <div className="flex gap-2">
+                      <a
+                        href={`tel:${selectedClub.phone}`}
+                        className="px-3 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
+                        title="Позвонить"
+                      >
+                        <Phone className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                      </a>
+                      <a
+                        href={selectedClub.whatsapp}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-3 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:text-green-500 transition-all duration-300 group"
+                        title="WhatsApp"
+                      >
+                        <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         {/* Special Offer */}
