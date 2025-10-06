@@ -75,11 +75,20 @@ export default function Header() {
           >
             <div className="relative w-20 h-8 lg:w-24 lg:h-10">
               <Image
-                src="/logo.png"
+                src="/logo-mobile.png"
                 alt="FitZone Logo"
                 fill
-                className="object-contain"
+                className="object-contain lg:hidden"
                 priority
+                sizes="80px"
+              />
+              <Image
+                src="/logo-desktop.png"
+                alt="FitZone Logo"
+                fill
+                className="object-contain hidden lg:block"
+                priority
+                sizes="96px"
               />
             </div>
           </motion.div>

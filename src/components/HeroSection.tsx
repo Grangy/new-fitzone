@@ -150,11 +150,20 @@ export default function HeroSection() {
           >
             <div className="relative w-32 h-12 md:w-40 md:h-16 mx-auto">
               <Image
-                src="/logo.png"
+                src="/logo-mobile.png"
                 alt="FitZone Logo"
                 fill
-                className="object-contain"
+                className="object-contain md:hidden"
                 priority
+                sizes="128px"
+              />
+              <Image
+                src="/logo-desktop.png"
+                alt="FitZone Logo"
+                fill
+                className="object-contain hidden md:block"
+                priority
+                sizes="160px"
               />
             </div>
           </motion.div>

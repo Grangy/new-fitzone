@@ -43,6 +43,15 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content={siteConfig.settings.themeColor} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/images/hero-bg.jpg" as="image" type="image/jpeg" />
+        <link rel="preload" href="/images/promo.jpg" as="image" type="image/jpeg" />
+        
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="//mc.yandex.ru" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
       </head>
       <body className={`${inter.className} antialiased`}>
         {children}
@@ -65,8 +74,8 @@ export default function RootLayout({
           </>
         )}
 
-        {/* Yandex.Metrica */}
-        <Script id="yandex-metrica" strategy="afterInteractive">
+        {/* Yandex.Metrica - Lazy loaded */}
+        <Script id="yandex-metrica" strategy="lazyOnload">
           {`
             (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
             m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
