@@ -185,8 +185,7 @@ export default function DirectionsSection() {
                 delay: index * (animationConfig.transition.duration * 0.1)
               }}
               viewport={animationConfig.viewport}
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe cursor-pointer"
-              onClick={() => handleDetailsClick(direction, 'direction')}
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe"
             >
               <div className="relative overflow-hidden">
                 <Image
@@ -227,16 +226,25 @@ export default function DirectionsSection() {
                 )}
                 
                 
-                  <div className="text-center">
-                    <p className="text-sm text-gray-500 mb-3">Нажмите на карточку для подробной информации</p>
+                  <div className="flex gap-3">
                     <button 
                       onClick={(e) => {
                         e.stopPropagation()
                         handleBookingClick(direction.id)
                       }}
-                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
+                      className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
                     >
                       Записаться
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDetailsClick(direction, 'direction')
+                      }}
+                      className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
+                      title="Подробнее"
+                    >
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                     </button>
                   </div>
               </div>
