@@ -80,6 +80,10 @@ export default function HeroSection() {
     }
   }
 
+  const handleBookingClick = () => {
+    setIsBookingModalOpen(true)
+  }
+
 
   // Detect mobile device and auto-play logic
   useEffect(() => {
@@ -193,17 +197,17 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
         >
           <button 
-            onClick={handleAppDownload}
+            onClick={handleBookingClick}
             className="btn-primary text-lg px-10 py-4 flex items-center gap-2"
           >
             <Download className="w-5 h-5" />
-            Скачать приложение
+            Записаться на тренировку
           </button>
           <button 
             onClick={() => scrollToSection('directions')}
             className="btn-secondary text-lg px-10 py-4"
           >
-            Выбрать тренировку
+            Выбрать направление
           </button>
         </motion.div>
 

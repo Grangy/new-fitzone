@@ -80,6 +80,11 @@ export default function DirectionsSection() {
     }
   }
 
+  const handleBookingClick = (directionId: string) => {
+    setSelectedDirectionId(directionId)
+    setIsBookingModalOpen(true)
+  }
+
   return (
     <section id="directions" className="section-padding bg-white">
       <div className="container-custom">
@@ -160,17 +165,17 @@ export default function DirectionsSection() {
                 
                 <div className="flex gap-3">
                   <button 
-                    onClick={handleAppDownload}
+                    onClick={() => handleBookingClick(direction.id)}
                     className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
                   >
-                    Записаться в приложении
+                    Записаться
                   </button>
-                  <button 
-                    onClick={() => handleScheduleClick(direction.id)}
+                  <button
+                    onClick={handleAppDownload}
                     className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
-                    title="Посмотреть расписание"
+                    title="Скачать приложение"
                   >
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <Download className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
                   </button>
                 </div>
               </div>
@@ -239,10 +244,10 @@ export default function DirectionsSection() {
                   
                   <div className="flex gap-3">
                     <button 
-                      onClick={handleAppDownload}
+                      onClick={() => handleBookingClick(trainer.id)}
                       className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
                     >
-                      Записаться в приложении
+                      Записаться
                     </button>
                     <div className="flex gap-2">
                       <a
