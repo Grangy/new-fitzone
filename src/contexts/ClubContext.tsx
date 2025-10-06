@@ -92,6 +92,17 @@ const clubs: ClubData[] = [
     ],
     directions: [
       {
+        id: 'zumba-pionerskaya',
+        title: 'Зумба',
+        description: 'Танцевальная фитнес-программа под латиноамериканскую музыку. Сжигай калории и получай удовольствие!',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 800₽',
+        duration: '60 мин',
+        level: 'Для всех уровней',
+        schedule: ['Пн, Ср, Пт: 19:00', 'Сб: 10:00'],
+        trainer: 'Анна Петрова'
+      },
+      {
         id: 'yoga-pionerskaya',
         title: 'Йога',
         description: 'Гармония тела и духа. Улучши гибкость, силу и найди внутренний баланс.',
@@ -103,14 +114,47 @@ const clubs: ClubData[] = [
         trainer: 'Анна Петрова'
       },
       {
-        id: 'crossfit-pionerskaya',
-        title: 'Кроссфит',
-        description: 'Высокоинтенсивные функциональные тренировки для максимального результата.',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        price: 'от 1200₽',
+        id: 'hatha-yoga-pionerskaya',
+        title: 'Хатха-йога',
+        description: 'Классическая йога с акцентом на асаны и дыхательные практики. Идеально для начинающих.',
+        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 800₽',
         duration: '60 мин',
-        level: 'Средний-продвинутый',
-        schedule: ['Пн, Ср, Пт: 07:00', 'Вт, Чт: 19:00'],
+        level: 'Начинающий',
+        schedule: ['Вт, Чт: 10:00', 'Сб: 11:00'],
+        trainer: 'Анна Петрова'
+      },
+      {
+        id: 'joint-gymnastics-pionerskaya',
+        title: 'Суставная гимнастика',
+        description: 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 600₽',
+        duration: '45 мин',
+        level: 'Для всех уровней',
+        schedule: ['Пн, Ср: 08:00', 'Пт: 18:30'],
+        trainer: 'Анна Петрова'
+      },
+      {
+        id: 'women-health-pionerskaya',
+        title: 'Женское здоровье',
+        description: 'Специальная программа для женщин, направленная на укрепление тазового дна и женского здоровья.',
+        image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 1000₽',
+        duration: '60 мин',
+        level: 'Женщины',
+        schedule: ['Вт, Чт: 19:30', 'Сб: 12:00'],
+        trainer: 'Анна Петрова'
+      },
+      {
+        id: 'taebo-pionerskaya',
+        title: 'Тай-бо',
+        description: 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
+        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 900₽',
+        duration: '60 мин',
+        level: 'Средний',
+        schedule: ['Пн, Ср: 20:00', 'Пт: 19:00'],
         trainer: 'Дмитрий Волков'
       }
     ],
@@ -154,26 +198,70 @@ const clubs: ClubData[] = [
     ],
     directions: [
       {
-        id: 'pilates-mira',
-        title: 'Пилатес',
-        description: 'Укрепи мышцы кора, улучши осанку и координацию движений.',
-        image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        id: 'oriental-dance-mira',
+        title: 'Восточные танцы',
+        description: 'Экзотические танцы Востока. Развивай пластику, грацию и женственность.',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 800₽',
+        duration: '60 мин',
+        level: 'Для всех уровней',
+        schedule: ['Пн, Ср: 19:00', 'Сб: 11:00'],
+        trainer: 'Елена Смирнова'
+      },
+      {
+        id: 'lady-dance-mira',
+        title: 'Леди-денс',
+        description: 'Современные женские танцы. Уверенность, сексуальность и женская энергия.',
+        image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         price: 'от 900₽',
-        duration: '55 мин',
-        level: 'Начинающий-средний',
-        schedule: ['Пн, Ср, Пт: 10:00', 'Вт, Чт: 17:00'],
+        duration: '60 мин',
+        level: 'Для всех уровней',
+        schedule: ['Вт, Чт: 20:00', 'Пт: 19:00'],
+        trainer: 'Елена Смирнова'
+      },
+      {
+        id: 'joint-gymnastics-mira',
+        title: 'Суставная гимнастика',
+        description: 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
+        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 600₽',
+        duration: '45 мин',
+        level: 'Для всех уровней',
+        schedule: ['Пн, Ср: 08:00', 'Пт: 18:30'],
         trainer: 'Михаил Козлов'
       },
       {
-        id: 'personal-mira',
-        title: 'Персональные тренировки',
-        description: 'Индивидуальный подход, персональная программа и максимальное внимание тренера.',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        price: 'от 2500₽',
+        id: 'taebo-mira',
+        title: 'Тай-бо',
+        description: 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
+        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 900₽',
         duration: '60 мин',
-        level: 'Любой уровень',
-        schedule: ['Пн-Пт: 08:00-20:00', 'Сб: 09:00-15:00'],
-        trainer: 'Елена Смирнова'
+        level: 'Средний',
+        schedule: ['Пн, Ср: 20:00', 'Пт: 19:00'],
+        trainer: 'Михаил Козлов'
+      },
+      {
+        id: 'street-lifting-mira',
+        title: 'Стрит-лифтинг',
+        description: 'Уличные тренировки с собственным весом. Сила, выносливость и функциональность.',
+        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 1000₽',
+        duration: '60 мин',
+        level: 'Средний-продвинутый',
+        schedule: ['Вт, Чт: 19:00', 'Сб: 10:00'],
+        trainer: 'Михаил Козлов'
+      },
+      {
+        id: 'crossfit-mira',
+        title: 'Кроссфит',
+        description: 'Высокоинтенсивные функциональные тренировки для максимального результата.',
+        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        price: 'от 1200₽',
+        duration: '60 мин',
+        level: 'Средний-продвинутый',
+        schedule: ['Пн, Ср, Пт: 07:00', 'Вт, Чт: 19:00'],
+        trainer: 'Михаил Козлов'
       }
     ],
     photos: [

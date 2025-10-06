@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Play, ChevronDown } from 'lucide-react'
+import { Play, ChevronDown, Download } from 'lucide-react'
 import { motion } from 'framer-motion'
 import BookingModal from './BookingModal'
 import OptimizedVideo from './OptimizedVideo'
@@ -62,6 +62,27 @@ export default function HeroSection() {
   const handleVideoError = () => {
     setVideoError(true)
     setIsVideoPlaying(false)
+  }
+
+  const handleAppDownload = () => {
+    // Определяем устройство и открываем соответствующее приложение
+    const userAgent = navigator.userAgent || navigator.vendor || ''
+    
+    if (/iPad|iPhone|iPod/.test(userAgent)) {
+      // iOS
+      window.open('https://apps.apple.com/ru/app/fitzone/id6477537132', '_blank')
+    } else if (/android/i.test(userAgent)) {
+      // Android
+      window.open('https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru', '_blank')
+    } else {
+      // Desktop - показываем оба варианта
+      const choice = confirm('Выберите ваше устройство:\nOK - для iPhone/iPad\nОтмена - для Android')
+      if (choice) {
+        window.open('https://apps.apple.com/ru/app/fitzone/id6477537132', '_blank')
+      } else {
+        window.open('https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru', '_blank')
+      }
+    }
   }
 
 
@@ -177,16 +198,17 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
         >
           <button 
-            onClick={() => setIsBookingModalOpen(true)}
-            className="btn-primary text-lg px-10 py-4"
+            onClick={handleAppDownload}
+            className="btn-primary text-lg px-10 py-4 flex items-center gap-2"
           >
-            Записаться на тренировку
+            <Download className="w-5 h-5" />
+            Скачать приложение
           </button>
           <button 
             onClick={() => scrollToSection('directions')}
             className="btn-secondary text-lg px-10 py-4"
           >
-            Выбрать направление
+            Выбрать тренировку
           </button>
         </motion.div>
 

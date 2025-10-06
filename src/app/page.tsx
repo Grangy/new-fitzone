@@ -2,6 +2,7 @@ import HeroSection from '../components/HeroSection'
 import PromoBanner from '../components/PromoBanner'
 import AdvantagesSection from '../components/AdvantagesSection'
 import DirectionsSection from '../components/DirectionsSection'
+import IndividualTrainingsSection from '../components/IndividualTrainingsSection'
 import ReviewsSection from '../components/ReviewsSection'
 import ClubPhotos from '../components/ClubPhotos'
 import ContactForm from '../components/ContactForm'
@@ -18,6 +19,7 @@ export default function Home() {
         <PromoBanner />
         <AdvantagesSection />
         <DirectionsSection />
+        <IndividualTrainingsSection />
         <ReviewsSection />
         <ClubPhotos />
         <ContactForm />
