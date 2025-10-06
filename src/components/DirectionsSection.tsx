@@ -75,13 +75,8 @@ export default function DirectionsSection() {
       // Android
       window.open('https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru', '_blank')
     } else {
-      // Desktop - показываем оба варианта
-      const choice = confirm('Выберите ваше устройство:\nOK - для iPhone/iPad\nОтмена - для Android')
-      if (choice) {
-        window.open('https://apps.apple.com/ru/app/fitzone/id6477537132', '_blank')
-      } else {
-        window.open('https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru', '_blank')
-      }
+      // Desktop - открываем App Store по умолчанию
+      window.open('https://apps.apple.com/ru/app/fitzone/id6477537132', '_blank')
     }
   }
 
