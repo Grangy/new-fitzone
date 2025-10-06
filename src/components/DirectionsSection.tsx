@@ -103,6 +103,41 @@ export default function DirectionsSection() {
           </p>
         </motion.div>
 
+        {/* Quiz Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mb-8 text-center"
+        >
+          <motion.button
+            onClick={() => setShowQuiz(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <Sparkles className="w-6 h-6" />
+            <span>Пройти квиз &ldquo;Найди свое направление&rdquo;</span>
+            <div className="bg-white/20 px-3 py-1 rounded-full text-sm">
+              2 мин
+            </div>
+          </motion.button>
+          
+          {/* Quiz Result Hint */}
+          {quizResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl"
+            >
+              <p className="text-green-800 text-sm">
+                ✨ Квиз пройден! Рекомендуем: <strong>{quizResult.direction}</strong>
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
+
         {/* Group Trainings */}
         <div className="mb-12">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Групповые тренировки</h3>
@@ -274,53 +309,6 @@ export default function DirectionsSection() {
           </div>
         </div>
 
-        {/* Club Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl text-center"
-        >
-          <p className="text-orange-800 font-medium">
-            📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
-          </p>
-        </motion.div>
-
-        {/* Quiz Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          className="mb-8 text-center"
-        >
-          <motion.button
-            onClick={() => setShowQuiz(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-          >
-            <Sparkles className="w-6 h-6" />
-            <span>Пройти квиз &ldquo;Найди свое направление&rdquo;</span>
-            <div className="bg-white/20 px-3 py-1 rounded-full text-sm">
-              2 мин
-            </div>
-          </motion.button>
-          
-          {/* Quiz Result Hint */}
-          {quizResult && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl"
-            >
-              <p className="text-green-800 text-sm">
-                ✨ Квиз пройден! Рекомендуем: <strong>{quizResult.direction}</strong>
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
 
         {/* App Download Banner */}
         <motion.div
