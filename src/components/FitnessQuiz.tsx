@@ -32,6 +32,14 @@ interface QuizQuestion {
       personal: number
       group: number
       functional: number
+      zumba: number
+      taebo: number
+      yoga_hatha: number
+      joint_gymnastics: number
+      women_health: number
+      oriental_dance: number
+      lady_dance: number
+      street_lifting: number
     }
   }[]
 }
@@ -46,6 +54,7 @@ interface QuizResult {
   price: string
   emoji: string
   color: string
+  key?: string
 }
 
 const questions: QuizQuestion[] = [
@@ -57,22 +66,22 @@ const questions: QuizQuestion[] = [
       {
         text: "Расслабление и гибкость",
         icon: Heart,
-        scores: { yoga: 3, pilates: 2, crossfit: 0, personal: 1, group: 1, functional: 0 }
+        scores: { yoga: 3, pilates: 2, crossfit: 0, personal: 1, group: 1, functional: 0, zumba: 1, taebo: 0, yoga_hatha: 3, joint_gymnastics: 2, women_health: 2, oriental_dance: 1, lady_dance: 1, street_lifting: 0 }
       },
       {
         text: "Похудение и тонус",
         icon: Zap,
-        scores: { yoga: 1, pilates: 3, crossfit: 2, personal: 2, group: 2, functional: 2 }
+        scores: { yoga: 1, pilates: 3, crossfit: 2, personal: 2, group: 2, functional: 2, zumba: 3, taebo: 2, yoga_hatha: 1, joint_gymnastics: 1, women_health: 3, oriental_dance: 2, lady_dance: 2, street_lifting: 1 }
       },
       {
         text: "Сила и выносливость",
         icon: Dumbbell,
-        scores: { yoga: 0, pilates: 1, crossfit: 3, personal: 2, group: 1, functional: 3 }
+        scores: { yoga: 0, pilates: 1, crossfit: 3, personal: 2, group: 1, functional: 3, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Индивидуальный подход",
         icon: Target,
-        scores: { yoga: 1, pilates: 1, crossfit: 1, personal: 3, group: 0, functional: 1 }
+        scores: { yoga: 1, pilates: 1, crossfit: 1, personal: 3, group: 0, functional: 1, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       }
     ]
   },
@@ -84,17 +93,17 @@ const questions: QuizQuestion[] = [
       {
         text: "30-45 минут",
         icon: Clock,
-        scores: { yoga: 2, pilates: 3, crossfit: 1, personal: 2, group: 2, functional: 1 }
+        scores: { yoga: 2, pilates: 3, crossfit: 1, personal: 2, group: 2, functional: 1, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "60 минут",
         icon: Clock,
-        scores: { yoga: 3, pilates: 2, crossfit: 2, personal: 3, group: 2, functional: 2 }
+        scores: { yoga: 3, pilates: 2, crossfit: 2, personal: 3, group: 2, functional: 2, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "90+ минут",
         icon: Clock,
-        scores: { yoga: 1, pilates: 1, crossfit: 3, personal: 2, group: 1, functional: 3 }
+        scores: { yoga: 1, pilates: 1, crossfit: 3, personal: 2, group: 1, functional: 3, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       }
     ]
   },
@@ -106,22 +115,22 @@ const questions: QuizQuestion[] = [
       {
         text: "Спокойная и медитативная",
         icon: Heart,
-        scores: { yoga: 3, pilates: 2, crossfit: 0, personal: 1, group: 0, functional: 0 }
+        scores: { yoga: 3, pilates: 2, crossfit: 0, personal: 1, group: 0, functional: 0, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Энергичная и мотивирующая",
         icon: Zap,
-        scores: { yoga: 0, pilates: 1, crossfit: 3, personal: 1, group: 3, functional: 2 }
+        scores: { yoga: 0, pilates: 1, crossfit: 3, personal: 1, group: 3, functional: 2, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Индивидуальная и сосредоточенная",
         icon: Target,
-        scores: { yoga: 1, pilates: 2, crossfit: 1, personal: 3, group: 0, functional: 1 }
+        scores: { yoga: 1, pilates: 2, crossfit: 1, personal: 3, group: 0, functional: 1, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Командная и поддерживающая",
         icon: Users,
-        scores: { yoga: 1, pilates: 1, crossfit: 2, personal: 0, group: 3, functional: 2 }
+        scores: { yoga: 1, pilates: 1, crossfit: 2, personal: 0, group: 3, functional: 2, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       }
     ]
   },
@@ -133,17 +142,17 @@ const questions: QuizQuestion[] = [
       {
         text: "Новичок",
         icon: Star,
-        scores: { yoga: 3, pilates: 3, crossfit: 0, personal: 2, group: 2, functional: 1 }
+        scores: { yoga: 3, pilates: 3, crossfit: 0, personal: 2, group: 2, functional: 1, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Средний",
         icon: Star,
-        scores: { yoga: 2, pilates: 2, crossfit: 2, personal: 2, group: 2, functional: 2 }
+        scores: { yoga: 2, pilates: 2, crossfit: 2, personal: 2, group: 2, functional: 2, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Продвинутый",
         icon: Trophy,
-        scores: { yoga: 1, pilates: 1, crossfit: 3, personal: 3, group: 1, functional: 3 }
+        scores: { yoga: 1, pilates: 1, crossfit: 3, personal: 3, group: 1, functional: 3, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       }
     ]
   },
@@ -155,17 +164,17 @@ const questions: QuizQuestion[] = [
       {
         text: "Техника и правильность",
         icon: CheckCircle,
-        scores: { yoga: 3, pilates: 3, crossfit: 1, personal: 3, group: 1, functional: 2 }
+        scores: { yoga: 3, pilates: 3, crossfit: 1, personal: 3, group: 1, functional: 2, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Интенсивность и результат",
         icon: Zap,
-        scores: { yoga: 0, pilates: 1, crossfit: 3, personal: 2, group: 2, functional: 3 }
+        scores: { yoga: 0, pilates: 1, crossfit: 3, personal: 2, group: 2, functional: 3, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       },
       {
         text: "Разнообразие упражнений",
         icon: Sparkles,
-        scores: { yoga: 1, pilates: 2, crossfit: 2, personal: 2, group: 3, functional: 3 }
+        scores: { yoga: 1, pilates: 2, crossfit: 2, personal: 2, group: 3, functional: 3, zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0, oriental_dance: 0, lady_dance: 0, street_lifting: 0 }
       }
     ]
   }
@@ -237,6 +246,94 @@ const results: { [key: string]: QuizResult } = {
     price: "от 1000₽",
     emoji: "⚡",
     color: "from-cyan-500 to-blue-500"
+  },
+  zumba: {
+    direction: "Зумба",
+    score: 0,
+    title: "Танцор жизни 💃",
+    description: "Зумба - это твоя страсть! Ты любишь танцы, музыку и энергичные движения.",
+    benefits: ["Кардио-тренировка", "Сжигание калорий", "Улучшение координации", "Хорошее настроение"],
+    trainer: "Анна Петрова",
+    price: "от 800₽",
+    emoji: "💃",
+    color: "from-pink-500 to-purple-500"
+  },
+  taebo: {
+    direction: "Тай-бо",
+    score: 0,
+    title: "Боец духа 🥊",
+    description: "Тай-бо - твой стиль! Ты хочешь развить силу, координацию и уверенность в себе.",
+    benefits: ["Развитие силы", "Улучшение координации", "Снятие стресса", "Повышение уверенности"],
+    trainer: "Дмитрий Волков",
+    price: "от 900₽",
+    emoji: "🥊",
+    color: "from-red-500 to-orange-500"
+  },
+  yoga_hatha: {
+    direction: "Хатха-йога",
+    score: 0,
+    title: "Мастер равновесия 🧘",
+    description: "Хатха-йога - твой путь! Ты ищешь баланс между силой и гибкостью.",
+    benefits: ["Улучшение гибкости", "Укрепление мышц", "Снижение стресса", "Улучшение осанки"],
+    trainer: "Елена Смирнова",
+    price: "от 800₽",
+    emoji: "🧘",
+    color: "from-green-500 to-teal-500"
+  },
+  joint_gymnastics: {
+    direction: "Суставная гимнастика",
+    score: 0,
+    title: "Хранитель здоровья 🦴",
+    description: "Суставная гимнастика - твой выбор! Ты заботишься о здоровье суставов и подвижности.",
+    benefits: ["Улучшение подвижности", "Профилактика травм", "Снятие напряжения", "Общее оздоровление"],
+    trainer: "Михаил Козлов",
+    price: "от 600₽",
+    emoji: "🦴",
+    color: "from-blue-500 to-cyan-500"
+  },
+  women_health: {
+    direction: "Женское здоровье",
+    score: 0,
+    title: "Забота о себе 🌸",
+    description: "Женское здоровье - твой приоритет! Ты хочешь чувствовать себя сильной и здоровой.",
+    benefits: ["Укрепление мышц таза", "Улучшение осанки", "Повышение энергии", "Общее самочувствие"],
+    trainer: "Анна Петрова",
+    price: "от 700₽",
+    emoji: "🌸",
+    color: "from-pink-500 to-rose-500"
+  },
+  oriental_dance: {
+    direction: "Восточные танцы",
+    score: 0,
+    title: "Восточная красавица 💃",
+    description: "Восточные танцы - твоя страсть! Ты любишь грацию, пластику и женственность.",
+    benefits: ["Развитие пластики", "Укрепление мышц", "Повышение уверенности", "Хорошее настроение"],
+    trainer: "Елена Смирнова",
+    price: "от 800₽",
+    emoji: "💃",
+    color: "from-purple-500 to-pink-500"
+  },
+  lady_dance: {
+    direction: "Леди-денс",
+    score: 0,
+    title: "Современная леди 👑",
+    description: "Леди-денс - твой стиль! Ты хочешь быть уверенной, сексуальной и женственной.",
+    benefits: ["Развитие женственности", "Повышение уверенности", "Улучшение осанки", "Снятие стресса"],
+    trainer: "Елена Смирнова",
+    price: "от 900₽",
+    emoji: "👑",
+    color: "from-rose-500 to-pink-500"
+  },
+  street_lifting: {
+    direction: "Стрит-лифтинг",
+    score: 0,
+    title: "Уличный атлет 💪",
+    description: "Стрит-лифтинг - твой выбор! Ты хочешь развить функциональную силу с собственным весом.",
+    benefits: ["Функциональная сила", "Развитие координации", "Улучшение баланса", "Повышение выносливости"],
+    trainer: "Дмитрий Волков",
+    price: "от 1000₽",
+    emoji: "💪",
+    color: "from-gray-500 to-slate-500"
   }
 }
 
@@ -254,10 +351,19 @@ export default function FitnessQuiz({ onComplete, onBooking }: FitnessQuizProps)
     crossfit: 0,
     personal: 0,
     group: 0,
-    functional: 0
+    functional: 0,
+    zumba: 0,
+    taebo: 0,
+    yoga_hatha: 0,
+    joint_gymnastics: 0,
+    women_health: 0,
+    oriental_dance: 0,
+    lady_dance: 0,
+    street_lifting: 0
   })
   const [showResult, setShowResult] = useState(false)
   const [result, setResult] = useState<QuizResult | null>(null)
+  const [topResults, setTopResults] = useState<QuizResult[]>([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [confetti, setConfetti] = useState(false)
   const [savedProgress, setSavedProgress] = useState(false)
@@ -312,17 +418,28 @@ export default function FitnessQuiz({ onComplete, onBooking }: FitnessQuizProps)
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1)
       } else {
-        // Показываем результат
-        const maxScore = Math.max(...Object.values(newScores))
-        const winnerKey = Object.keys(newScores).find(key => 
-          newScores[key as keyof typeof newScores] === maxScore
-        ) as keyof typeof results
+        // Показываем результаты - 1 групповое + 2 индивидуальных направления
+        const allResults = Object.entries(newScores)
+          .map(([key, score]) => ({ ...results[key], score, key }))
+          .sort((a, b) => b.score - a.score)
         
-        const finalResult = { ...results[winnerKey], score: maxScore }
-        setResult(finalResult)
+        // Групповые направления (все кроме personal)
+        const groupDirections = allResults.filter(result => result.key !== 'personal')
+        // Индивидуальные направления (только personal)
+        const individualDirections = allResults.filter(result => result.key === 'personal')
+        
+        // Выбираем 1 лучшее групповое и 2 лучших индивидуальных
+        const selectedGroup = groupDirections.slice(0, 1)
+        const selectedIndividual = individualDirections.slice(0, 2)
+        
+        // Объединяем результаты: сначала групповое, потом индивидуальные
+        const sortedResults = [...selectedGroup, ...selectedIndividual]
+        
+        setTopResults(sortedResults)
+        setResult(sortedResults[0]) // Основной результат
         setShowResult(true)
         setConfetti(true)
-        onComplete(finalResult)
+        onComplete(sortedResults[0])
         
         // Очищаем сохраненный прогресс
         localStorage.removeItem('fitnessQuizProgress')
@@ -338,7 +455,11 @@ export default function FitnessQuiz({ onComplete, onBooking }: FitnessQuizProps)
       setAnswers(newAnswers)
       
       // Пересчитываем очки
-      const newScores = { yoga: 0, pilates: 0, crossfit: 0, personal: 0, group: 0, functional: 0 }
+      const newScores = { 
+        yoga: 0, pilates: 0, crossfit: 0, personal: 0, group: 0, functional: 0,
+        zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0,
+        oriental_dance: 0, lady_dance: 0, street_lifting: 0
+      }
       newAnswers.forEach((answerIndex, questionIndex) => {
         const q = questions[questionIndex]
         const option = q.options[answerIndex]
@@ -353,7 +474,11 @@ export default function FitnessQuiz({ onComplete, onBooking }: FitnessQuizProps)
   const restartQuiz = () => {
     setCurrentQuestion(0)
     setAnswers([])
-    setScores({ yoga: 0, pilates: 0, crossfit: 0, personal: 0, group: 0, functional: 0 })
+    setScores({ 
+      yoga: 0, pilates: 0, crossfit: 0, personal: 0, group: 0, functional: 0,
+      zumba: 0, taebo: 0, yoga_hatha: 0, joint_gymnastics: 0, women_health: 0,
+      oriental_dance: 0, lady_dance: 0, street_lifting: 0
+    })
     setShowResult(false)
     setResult(null)
     setConfetti(false)
@@ -375,7 +500,7 @@ export default function FitnessQuiz({ onComplete, onBooking }: FitnessQuizProps)
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl w-full max-w-sm sm:max-w-2xl mx-auto"
+        className="relative bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-xl w-full max-w-xs sm:max-w-lg mx-auto"
       >
         {/* Конфетти эффект */}
         {confetti && (
@@ -406,96 +531,136 @@ export default function FitnessQuiz({ onComplete, onBooking }: FitnessQuizProps)
         )}
 
         <div className="text-center">
-          {/* Результат */}
+          {/* Основной результат */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
+            className="mb-4"
           >
-            <div className={`text-4xl sm:text-5xl lg:text-6xl mb-3 sm:mb-4 bg-gradient-to-r ${result.color} bg-clip-text text-transparent`}>
+            <div className={`text-3xl sm:text-4xl mb-2 bg-gradient-to-r ${result.color} bg-clip-text text-transparent`}>
               {result.emoji}
             </div>
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 px-2">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
               {result.title}
             </h2>
-            <div className={`inline-block px-4 py-2 rounded-full bg-gradient-to-r ${result.color} text-white font-semibold mb-4`}>
+            <div className={`inline-block px-3 py-1 rounded-full bg-gradient-to-r ${result.color} text-white font-semibold text-sm mb-3`}>
               {result.direction}
             </div>
           </motion.div>
 
-          {/* Описание */}
-          <motion.p
+          {/* Дополнительные рекомендации - компактная версия */}
+          {topResults.length > 1 && (
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mb-4"
+            >
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">Также рекомендуем:</h3>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {topResults.slice(1).map((rec, index) => (
+                  <div key={index} className={`px-3 py-2 rounded-lg text-xs font-medium ${
+                    rec.key === 'personal' 
+                      ? 'bg-green-100 text-green-700 border border-green-200' 
+                      : 'bg-blue-100 text-blue-700 border border-blue-200'
+                  }`}>
+                    <span className="mr-1">{rec.emoji}</span>
+                    {rec.direction}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Описание и преимущества - компактная версия */}
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="text-gray-600 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base px-2"
+            className="mb-4"
           >
-            {result.description}
-          </motion.p>
+            <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              {result.description}
+            </p>
+            <div className="grid grid-cols-2 gap-1 text-xs text-gray-700">
+              {result.benefits.slice(0, 4).map((benefit, index) => (
+                <div key={index} className="flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
+                  <span className="truncate">{benefit}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
 
-          {/* Преимущества */}
+          {/* Информация о тренере - компактная версия */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6 px-2"
+            className="bg-gray-50 rounded-lg p-3 mb-4"
           >
-            {result.benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center gap-2 text-xs sm:text-sm text-gray-700">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                {benefit}
-              </div>
-            ))}
-          </motion.div>
-
-          {/* Информация о тренере */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="bg-gray-50 rounded-2xl p-4 mb-6"
-          >
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center text-sm">
               <div>
-                <p className="text-sm text-gray-600">Тренер</p>
-                <p className="font-semibold text-gray-900">{result.trainer}</p>
+                <span className="text-gray-600">Тренер: </span>
+                <span className="font-semibold text-gray-900">{result.trainer}</span>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">Стоимость</p>
-                <p className="font-bold text-orange-500">{result.price}</p>
+                <span className="font-bold text-orange-500">{result.price}</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Кнопки действий */}
+          {/* Кнопки действий - компактная версия */}
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="flex flex-col sm:flex-row gap-2 sm:gap-3 px-2"
+            transition={{ delay: 0.8 }}
+            className="space-y-3"
           >
+            {/* Основная кнопка */}
             <button
               onClick={() => onBooking(result.direction)}
-              className={`flex-1 bg-gradient-to-r ${result.color} text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm sm:text-base`}
+              className={`w-full bg-gradient-to-r ${result.color} text-white font-semibold py-3 px-4 rounded-lg hover:shadow-lg transition-all duration-300 text-sm`}
             >
               Записаться на {result.direction}
             </button>
             
-            <div className="flex gap-2">
+            {/* Дополнительные кнопки */}
+            {topResults.length > 1 && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {topResults.slice(1).map((rec, index) => (
+                  <button
+                    key={index}
+                    onClick={() => onBooking(rec.direction)}
+                    className={`px-3 py-2 rounded-lg font-medium text-xs transition-colors ${
+                      rec.key === 'personal' 
+                        ? 'bg-green-100 hover:bg-green-200 text-green-700' 
+                        : 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+                    }`}
+                  >
+                    {rec.direction}
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {/* Вспомогательные кнопки */}
+            <div className="flex justify-center gap-2">
               <button
                 onClick={shareResult}
-                className="p-2 sm:p-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-                title="Поделиться результатом"
+                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                title="Поделиться"
               >
-                <Share2 className="w-5 h-5 text-gray-600" />
+                <Share2 className="w-4 h-4 text-gray-600" />
               </button>
               
               <button
                 onClick={restartQuiz}
-                className="p-2 sm:p-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
-                title="Пройти заново"
+                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                title="Заново"
               >
-                <RefreshCw className="w-5 h-5 text-gray-600" />
+                <RefreshCw className="w-4 h-4 text-gray-600" />
               </button>
             </div>
           </motion.div>

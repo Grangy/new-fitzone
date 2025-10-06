@@ -54,6 +54,26 @@ export default function DirectionsSection() {
     return () => window.removeEventListener('clubChanged', handleClubChange)
   }, [forceUpdate])
 
+  // Handle ESC key to close quiz
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showQuiz) {
+        setShowQuiz(false)
+      }
+    }
+
+    if (showQuiz) {
+      document.addEventListener('keydown', handleEscKey)
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey)
+      document.body.style.overflow = 'unset'
+    }
+  }, [showQuiz])
+
 
 
 
@@ -417,13 +437,22 @@ export default function DirectionsSection() {
 
       {/* Quiz Modal */}
       {showQuiz && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
+          onClick={(e) => {
+            // Close modal when clicking on overlay
+            if (e.target === e.currentTarget) {
+              setShowQuiz(false)
+            }
+          }}
+        >
           <div className="relative w-full max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto my-4 sm:my-8 max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowQuiz(false)}
-              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 shadow-lg transition-colors text-lg sm:text-xl"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 shadow-lg transition-colors hover:bg-gray-50"
+              aria-label="Закрыть квиз"
             >
-              ×
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <FitnessQuiz
               onComplete={handleQuizComplete}
