@@ -74,7 +74,7 @@ const clubs: ClubData[] = [
         name: 'Анна Петрова2',
         specialty: 'Йога и Пилатес',
         experience: '8 лет опыта',
-        image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+        image: '/images/trainer1.jpg',
         certifications: ['RYT-500', 'Pilates Mat', 'Yin Yoga'],
         bio: 'Сертифицированный инструктор йоги с 8-летним опытом. Специализируется на хатха-йоге, виньяса-флоу и восстановительной йоге.',
         schedule: ['Пн, Ср, Пт: 09:00-10:00', 'Вт, Чт: 18:00-19:00']
@@ -84,7 +84,7 @@ const clubs: ClubData[] = [
         name: 'Дмитрий Волков',
         specialty: 'Кроссфит и Функциональный тренинг',
         experience: '6 лет опыта',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+        image: '/images/trainer1.jpg',
         certifications: ['CrossFit L2', 'FMS', 'Olympic Weightlifting'],
         bio: 'Мастер спорта по тяжелой атлетике. Специализируется на функциональном тренинге и кроссфите.',
         schedule: ['Пн, Ср, Пт: 07:00-08:00', 'Вт, Чт: 19:00-20:00']
@@ -95,7 +95,7 @@ const clubs: ClubData[] = [
         id: 'zumba-pionerskaya',
         title: 'Зумба',
         description: 'Танцевальная фитнес-программа под латиноамериканскую музыку. Сжигай калории и получай удовольствие!',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 800₽',
         duration: '60 мин',
         level: 'Для всех уровней',
@@ -106,7 +106,7 @@ const clubs: ClubData[] = [
         id: 'yoga-pionerskaya',
         title: 'Йога',
         description: 'Гармония тела и духа. Улучши гибкость, силу и найди внутренний баланс.',
-        image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 800₽',
         duration: '60 мин',
         level: 'Для всех уровней',
@@ -117,7 +117,7 @@ const clubs: ClubData[] = [
         id: 'hatha-yoga-pionerskaya',
         title: 'Хатха-йога',
         description: 'Классическая йога с акцентом на асаны и дыхательные практики. Идеально для начинающих.',
-        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 800₽',
         duration: '60 мин',
         level: 'Начинающий',
@@ -128,7 +128,7 @@ const clubs: ClubData[] = [
         id: 'joint-gymnastics-pionerskaya',
         title: 'Суставная гимнастика',
         description: 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 600₽',
         duration: '45 мин',
         level: 'Для всех уровней',
@@ -150,7 +150,7 @@ const clubs: ClubData[] = [
         id: 'taebo-pionerskaya',
         title: 'Тай-бо',
         description: 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 900₽',
         duration: '60 мин',
         level: 'Средний',
@@ -159,9 +159,9 @@ const clubs: ClubData[] = [
       }
     ],
     photos: [
-      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+      '/images/gym1.jpg',
+      '/images/gym2.jpg',
+      '/images/gym3.jpg'
     ]
   },
   {
@@ -180,7 +180,7 @@ const clubs: ClubData[] = [
         name: 'Елена Смирнова',
         specialty: 'Персональные тренировки',
         experience: '10 лет опыта',
-        image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+        image: '/images/trainer1.jpg',
         certifications: ['NASM-CPT', 'Nutrition Coach', 'TRX'],
         bio: 'Сертифицированный персональный тренер с 10-летним опытом. Специализируется на коррекции фигуры и реабилитации.',
         schedule: ['Пн-Пт: 08:00-20:00', 'Сб: 09:00-15:00']
@@ -190,7 +190,7 @@ const clubs: ClubData[] = [
         name: 'Михаил Козлов',
         specialty: 'Пилатес и Функциональный тренинг',
         experience: '7 лет опыта',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80',
+        image: '/images/trainer1.jpg',
         certifications: ['Pilates Mat', 'Reformer', 'Functional Training'],
         bio: 'Сертифицированный инструктор пилатеса. Специализируется на работе с позвоночником и коррекции осанки.',
         schedule: ['Пн, Ср, Пт: 10:00-11:00', 'Вт, Чт: 17:00-18:00']
@@ -201,7 +201,7 @@ const clubs: ClubData[] = [
         id: 'oriental-dance-mira',
         title: 'Восточные танцы',
         description: 'Экзотические танцы Востока. Развивай пластику, грацию и женственность.',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 800₽',
         duration: '60 мин',
         level: 'Для всех уровней',
@@ -223,7 +223,7 @@ const clubs: ClubData[] = [
         id: 'joint-gymnastics-mira',
         title: 'Суставная гимнастика',
         description: 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
-        image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 600₽',
         duration: '45 мин',
         level: 'Для всех уровней',
@@ -234,7 +234,7 @@ const clubs: ClubData[] = [
         id: 'taebo-mira',
         title: 'Тай-бо',
         description: 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 900₽',
         duration: '60 мин',
         level: 'Средний',
@@ -245,7 +245,7 @@ const clubs: ClubData[] = [
         id: 'street-lifting-mira',
         title: 'Стрит-лифтинг',
         description: 'Уличные тренировки с собственным весом. Сила, выносливость и функциональность.',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 1000₽',
         duration: '60 мин',
         level: 'Средний-продвинутый',
@@ -256,7 +256,7 @@ const clubs: ClubData[] = [
         id: 'crossfit-mira',
         title: 'Кроссфит',
         description: 'Высокоинтенсивные функциональные тренировки для максимального результата.',
-        image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+        image: '/images/trainer1.jpg',
         price: 'от 1200₽',
         duration: '60 мин',
         level: 'Средний-продвинутый',
@@ -265,9 +265,9 @@ const clubs: ClubData[] = [
       }
     ],
     photos: [
-      'https://images.unsplash.com/photo-1518611012118-696072aa579a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-      'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'
+      '/images/gym1.jpg',
+      '/images/gym2.jpg',
+      '/images/gym3.jpg'
     ]
   }
 ]

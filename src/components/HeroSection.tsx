@@ -122,7 +122,7 @@ export default function HeroSection() {
           <div 
             className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black bg-cover bg-center"
             style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80')",
+              backgroundImage: "url('/images/hero-bg.jpg')",
               filter: "blur(2px) brightness(0.6)",
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -141,12 +141,12 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
         >
-          {/* Logo */}
+          {/* Logo - Hidden on mobile */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="mb-8"
+            className="mb-8 hidden md:block"
           >
             <div className="relative w-32 h-12 md:w-40 md:h-16 mx-auto">
               <Image

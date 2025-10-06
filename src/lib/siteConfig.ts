@@ -73,12 +73,12 @@ export const siteConfig = {
   // Баннеры и промо-материалы
   banners: {
     promo: {
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+      image: "/images/promo.jpg",
       alt: "FitZone Promo",
       aspectRatio: "32/9" as const,
     },
     hero: {
-      backgroundImage: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+      backgroundImage: "/images/hero-bg.jpg",
     }
   },
 
