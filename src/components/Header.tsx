@@ -10,7 +10,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isClubDropdownOpen, setIsClubDropdownOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const { selectedClub, setSelectedClub, clubs } = useClub()
+  const { selectedClub, setSelectedClub, clubs, loading } = useClub()
 
   // Handle scroll effect
   useEffect(() => {
@@ -138,19 +138,19 @@ export default function Header() {
                         key={club.id}
                         onClick={() => selectClub(club)}
                         className={`w-full px-4 py-4 text-left hover:bg-orange-50 transition-all duration-200 border-b border-gray-100 last:border-b-0 ${
-                          selectedClub.id === club.id 
+                          selectedClub?.id === club.id 
                             ? 'bg-orange-50 text-orange-600 border-l-4 border-l-orange-500' 
                             : 'text-gray-700 hover:text-orange-600'
                         }`}
                       >
                         <div className="flex items-start gap-3">
                           <MapPin className={`w-5 h-5 mt-0.5 ${
-                            selectedClub.id === club.id ? 'text-orange-500' : 'text-gray-400'
+                            selectedClub?.id === club.id ? 'text-orange-500' : 'text-gray-400'
                           }`} />
                           <div className="flex-1">
                             <div className="font-semibold text-base mb-1">{club.name}</div>
                             <div className="text-sm text-gray-600 leading-relaxed">{club.address}</div>
-                            {selectedClub.id === club.id && (
+                            {selectedClub?.id === club.id && (
                               <div className="text-xs text-orange-500 font-medium mt-1">
                                 ✓ Выбран
                               </div>
@@ -165,88 +165,96 @@ export default function Header() {
             </div>
 
             {/* Contact Info */}
-            <div className="flex items-center gap-4">
-              {/* Phone */}
-              <motion.a
-                href={`tel:${selectedClub.phone}`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 ${
-                  isScrolled
-                    ? 'bg-orange-500 text-white hover:bg-orange-600'
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                <Phone className="w-4 h-4" />
-                <span className="text-sm font-medium">Позвонить</span>
-              </motion.a>
-
-              {/* Social Links */}
-              <div className="flex items-center gap-2">
-                <motion.a
-                  href={selectedClub.whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
-                    isScrolled
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      : 'bg-white/20 text-white hover:bg-white/30'
-                  }`}
-                  aria-label="WhatsApp"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                </motion.a>
-
-                <motion.a
-                  href={selectedClub.telegram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
-                    isScrolled
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      : 'bg-white/20 text-white hover:bg-white/30'
-                  }`}
-                  aria-label="Telegram"
-                >
-                  <Send className="w-5 h-5" />
-                </motion.a>
-
-                <motion.a
-                  href={selectedClub.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
-                    isScrolled
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      : 'bg-white/20 text-white hover:bg-white/30'
-                  }`}
-                  aria-label="Instagram"
-                >
-                  <Instagram className="w-5 h-5" />
-                </motion.a>
+            {loading ? (
+              <div className="flex items-center gap-4">
+                <div className="animate-pulse">
+                  <div className="h-10 w-24 bg-gray-600 rounded-lg"></div>
+                </div>
               </div>
-            </div>
-          </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                {/* Phone */}
+                <motion.a
+                  href={`tel:${selectedClub?.phone || ''}`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 ${
+                    isScrolled
+                      ? 'bg-orange-500 text-white hover:bg-orange-600'
+                      : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+                >
+                  <Phone className="w-4 h-4" />
+                  <span className="text-sm font-medium">Позвонить</span>
+                </motion.a>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`lg:hidden p-2 rounded-lg transition-all duration-300 ${
-              isScrolled
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                : 'bg-white/20 text-white hover:bg-white/30'
-            }`}
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </motion.button>
+                {/* Social Links */}
+                <div className="flex items-center gap-2">
+                  <motion.a
+                    href={selectedClub?.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                      isScrolled
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                    aria-label="WhatsApp"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </motion.a>
+
+                  <motion.a
+                    href={selectedClub?.telegram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                      isScrolled
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                    aria-label="Telegram"
+                  >
+                    <Send className="w-5 h-5" />
+                  </motion.a>
+
+                  <motion.a
+                    href={selectedClub?.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                      isScrolled
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                    aria-label="Instagram"
+                  >
+                    <Instagram className="w-5 h-5" />
+                  </motion.a>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`lg:hidden p-2 rounded-lg transition-all duration-300 ${
+                isScrolled
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-white/20 text-white hover:bg-white/30'
+              }`}
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </motion.button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -271,19 +279,19 @@ export default function Header() {
                       key={club.id}
                       onClick={() => selectClub(club)}
                       className={`w-full text-left p-4 rounded-xl transition-all duration-300 border-2 ${
-                        selectedClub.id === club.id
+                        selectedClub?.id === club.id
                           ? 'bg-orange-500 text-white border-orange-500'
                           : 'bg-gray-100 text-gray-700 hover:bg-orange-50 hover:border-orange-200 border-gray-200'
                       }`}
                     >
                       <div className="flex items-start gap-3">
                         <MapPin className={`w-5 h-5 mt-0.5 ${
-                          selectedClub.id === club.id ? 'text-white' : 'text-gray-400'
+                          selectedClub?.id === club.id ? 'text-white' : 'text-gray-400'
                         }`} />
                         <div className="flex-1">
                           <div className="font-semibold text-base mb-1">{club.name}</div>
                           <div className="text-sm opacity-75 leading-relaxed">{club.address}</div>
-                          {selectedClub.id === club.id && (
+                          {selectedClub?.id === club.id && (
                             <div className="text-xs text-orange-100 font-medium mt-1">
                               ✓ Выбран
                             </div>
@@ -315,16 +323,16 @@ export default function Header() {
                 <div className="flex items-center gap-3 mb-4">
                   <Phone className="w-5 h-5 text-orange-500" />
                   <a
-                    href={`tel:${selectedClub.phone}`}
+                    href={`tel:${selectedClub?.phone}`}
                     className="text-gray-700 font-medium"
                   >
-                    {selectedClub.phone}
+                    {selectedClub?.phone}
                   </a>
                 </div>
 
                 <div className="flex gap-3">
                   <motion.a
-                    href={selectedClub.whatsapp}
+                    href={selectedClub?.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.05 }}
@@ -336,7 +344,7 @@ export default function Header() {
                   </motion.a>
 
                   <motion.a
-                    href={selectedClub.telegram}
+                    href={selectedClub?.telegram}
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.05 }}

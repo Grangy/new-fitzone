@@ -19,7 +19,7 @@ export default function HeroSection() {
   const [userInteracted, setUserInteracted] = useState(false)
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
   const videoRef = useRef<{ playVideo: () => void } | null>(null)
-  const { selectedClub } = useClub()
+  const { selectedClub, loading } = useClub()
   const forceUpdate = useForceUpdate()
 
   // Listen for club changes to trigger re-render
@@ -165,14 +165,23 @@ export default function HeroSection() {
           <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto">
             Только то, что нужно тебе. Выбирай направления, тренеров и время — плати только за результат
           </p>
-          <div className="mb-8">
-            <p className="text-lg text-gray-300 mb-2">
-              📍 {selectedClub.address}
-            </p>
-            <p className="text-sm text-gray-400">
-              {selectedClub.description}
-            </p>
-          </div>
+          {loading ? (
+            <div className="mb-8">
+              <div className="animate-pulse">
+                <div className="h-6 bg-gray-600 rounded mb-2 w-64 mx-auto"></div>
+                <div className="h-4 bg-gray-700 rounded w-96 mx-auto"></div>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-8">
+              <p className="text-lg text-gray-300 mb-2">
+                📍 {selectedClub?.address || 'Адрес не указан'}
+              </p>
+              <p className="text-sm text-gray-400">
+                {selectedClub?.description || 'Описание не указано'}
+              </p>
+            </div>
+          )}
         </motion.div>
 
         <motion.div

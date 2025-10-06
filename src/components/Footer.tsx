@@ -28,10 +28,10 @@ export default function Footer() {
 
 
   const socialLinks = [
-    { icon: MessageCircle, href: selectedClub.whatsapp, label: 'WhatsApp' },
-    { icon: Send, href: selectedClub.telegram, label: 'Telegram' },
-    { icon: Instagram, href: selectedClub.instagram, label: 'Instagram' },
-    { icon: Facebook, href: selectedClub.vk, label: 'VKontakte' }
+    { icon: MessageCircle, href: selectedClub?.whatsapp || '', label: 'WhatsApp' },
+    { icon: Send, href: selectedClub?.telegram || '', label: 'Telegram' },
+    { icon: Instagram, href: selectedClub?.instagram || '', label: 'Instagram' },
+    { icon: Facebook, href: selectedClub?.vk || '', label: 'VKontakte' }
   ]
 
   const quickLinks = [
@@ -81,8 +81,8 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-orange-400" />
-                <a href={`tel:${selectedClub.phone}`} className="hover:text-orange-400 transition-colors">
-                  {selectedClub.phone}
+                <a href={`tel:${selectedClub?.phone || ''}`} className="hover:text-orange-400 transition-colors">
+                  {selectedClub?.phone || ''}
                 </a>
               </div>
               <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-orange-400" />
-                <span>{selectedClub.address}</span>
+                <span>{selectedClub?.address || ''}</span>
               </div>
             </div>
           </motion.div>

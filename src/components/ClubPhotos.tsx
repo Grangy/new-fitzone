@@ -37,13 +37,13 @@ export default function ClubPhotos() {
   }
 
   const nextPhoto = () => {
-    if (selectedPhoto !== null) {
+    if (selectedPhoto !== null && selectedClub) {
       setSelectedPhoto((selectedPhoto + 1) % selectedClub.photos.length)
     }
   }
 
   const prevPhoto = () => {
-    if (selectedPhoto !== null) {
+    if (selectedPhoto !== null && selectedClub) {
       setSelectedPhoto(selectedPhoto === 0 ? selectedClub.photos.length - 1 : selectedPhoto - 1)
     }
   }
@@ -64,15 +64,17 @@ export default function ClubPhotos() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             Посмотрите, как выглядит наш клуб изнутри
           </p>
-          <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-            <p className="text-orange-800 font-medium">
-              📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
-            </p>
-          </div>
+          {selectedClub && (
+            <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+              <p className="text-orange-800 font-medium">
+                📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
+              </p>
+            </div>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {selectedClub.photos.map((photo, index) => (
+          {selectedClub?.photos.map((photo, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 50 }}
@@ -142,8 +144,8 @@ export default function ClubPhotos() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <Image
-                  src={selectedClub.photos[selectedPhoto]}
-                  alt={`Фото клуба ${selectedClub.name} ${selectedPhoto + 1}`}
+                  src={selectedClub?.photos[selectedPhoto] || ''}
+                  alt={`Фото клуба ${selectedClub?.name || ''} ${selectedPhoto + 1}`}
                   width={800}
                   height={600}
                   className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
@@ -151,7 +153,7 @@ export default function ClubPhotos() {
               </motion.div>
 
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm">
-                {selectedPhoto + 1} / {selectedClub.photos.length}
+                {selectedPhoto + 1} / {selectedClub?.photos.length || 0}
               </div>
             </div>
           </motion.div>

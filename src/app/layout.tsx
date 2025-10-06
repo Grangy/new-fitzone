@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import { siteConfig } from "../lib/siteConfig";
+import DatabaseInitializer from "../components/DatabaseInitializer";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -45,6 +46,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${inter.className} antialiased`}>
+        <DatabaseInitializer />
         {children}
         
         {/* Google Analytics */}

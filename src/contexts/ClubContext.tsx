@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { siteConfig } from '../lib/siteConfig'
 
 export interface ClubData {
   id: string
@@ -41,9 +40,6 @@ export interface Direction {
   trainer: string
 }
 
-// Экспорт конфигурации сайта
-export { siteConfig }
-
 // Интерфейс для расписания
 export interface ScheduleItem {
   day: string
@@ -57,7 +53,8 @@ export interface ScheduleData {
   schedule: ScheduleItem[]
 }
 
-const clubs: ClubData[] = [
+// Заглушка для клубов (будет заменена данными из API)
+const defaultClubs: ClubData[] = [
   {
     id: 'pionerskaya',
     name: 'ул. Пионерская',
@@ -273,35 +270,71 @@ const clubs: ClubData[] = [
 ]
 
 interface ClubContextType {
-  selectedClub: ClubData
+  selectedClub: ClubData | null
   setSelectedClub: (club: ClubData) => void
   clubs: ClubData[]
+  loading: boolean
 }
 
 const ClubContext = createContext<ClubContextType | undefined>(undefined)
 
 export function ClubProvider({ children }: { children: ReactNode }) {
-  const [selectedClub, setSelectedClub] = useState<ClubData>(clubs[0])
+  const [clubs, setClubs] = useState<ClubData[]>([])
+  const [selectedClub, setSelectedClub] = useState<ClubData | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Load saved club selection on mount
+  // Загружаем клубы из API
   useEffect(() => {
-    const savedClub = localStorage.getItem('selectedClub')
-    if (savedClub) {
+    const fetchClubs = async () => {
       try {
-        const club = JSON.parse(savedClub)
-        const foundClub = clubs.find(c => c.id === club.id)
-        if (foundClub) {
-          setSelectedClub(foundClub)
+        const response = await fetch('/api/public/clubs')
+        if (response.ok) {
+          const data = await response.json()
+          setClubs(data)
+          
+          // Загружаем сохраненный выбор клуба
+          const savedClub = localStorage.getItem('selectedClub')
+          if (savedClub) {
+            try {
+              const club = JSON.parse(savedClub)
+              const foundClub = data.find((c: ClubData) => c.id === club.id)
+              if (foundClub) {
+                setSelectedClub(foundClub)
+              } else if (data.length > 0) {
+                setSelectedClub(data[0])
+              }
+            } catch (error) {
+              console.error('Error loading saved club:', error)
+              if (data.length > 0) {
+                setSelectedClub(data[0])
+              }
+            }
+          } else if (data.length > 0) {
+            setSelectedClub(data[0])
+          }
+        } else {
+          // Fallback к статическим данным
+          setClubs(defaultClubs)
+          setSelectedClub(defaultClubs[0])
         }
       } catch (error) {
-        console.error('Error loading saved club:', error)
+        console.error('Error fetching clubs:', error)
+        // Fallback к статическим данным
+        setClubs(defaultClubs)
+        setSelectedClub(defaultClubs[0])
+      } finally {
+        setLoading(false)
       }
     }
+
+    fetchClubs()
   }, [])
 
   // Save club selection when it changes
   useEffect(() => {
-    localStorage.setItem('selectedClub', JSON.stringify(selectedClub))
+    if (selectedClub) {
+      localStorage.setItem('selectedClub', JSON.stringify(selectedClub))
+    }
   }, [selectedClub])
 
   const handleSetSelectedClub = (club: ClubData) => {
@@ -316,7 +349,8 @@ export function ClubProvider({ children }: { children: ReactNode }) {
     <ClubContext.Provider value={{
       selectedClub,
       setSelectedClub: handleSetSelectedClub,
-      clubs
+      clubs,
+      loading
     }}>
       {children}
     </ClubContext.Provider>

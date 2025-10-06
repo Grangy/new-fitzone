@@ -212,7 +212,7 @@ export default function DirectionsSection() {
         <div className="mb-12">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Групповые тренировки</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {selectedClub.directions.map((direction, index) => (
+            {selectedClub?.directions.map((direction, index) => (
             <motion.div
               key={index}
               initial={animationConfig.initial}
@@ -285,7 +285,7 @@ export default function DirectionsSection() {
         <div className="mb-12">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Индивидуальные тренировки</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {selectedClub.trainers.map((trainer, index) => (
+            {selectedClub?.trainers.map((trainer, index) => (
               <motion.div
                 key={trainer.id}
                 initial={animationConfig.initial}
@@ -558,14 +558,14 @@ export default function DirectionsSection() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Контакты</h3>
                       <div className="flex gap-4">
                         <a
-                          href={`tel:${selectedClub.phone}`}
+                          href={`tel:${selectedClub?.phone || ''}`}
                           className="flex items-center gap-2 text-orange-600 hover:text-orange-700 transition-colors"
                         >
                           <Phone className="w-4 h-4" />
                           Позвонить
                         </a>
                         <a
-                          href={selectedClub.whatsapp}
+                          href={selectedClub?.whatsapp || ''}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
