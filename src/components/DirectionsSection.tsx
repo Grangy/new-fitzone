@@ -23,6 +23,8 @@ export default function DirectionsSection() {
     title: string;
     description: string;
   } | null>(null)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [selectedDetails, setSelectedDetails] = useState<any>(null)
   const { getAnimationConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
   const { selectedClub } = useClub()
@@ -83,6 +85,11 @@ export default function DirectionsSection() {
   const handleBookingClick = (directionId: string) => {
     setSelectedDirectionId(directionId)
     setIsBookingModalOpen(true)
+  }
+
+  const handleDetailsClick = (item: any, type: 'direction' | 'trainer') => {
+    setSelectedDetails({ ...item, type })
+    setIsDetailsModalOpen(true)
   }
 
   return (
@@ -206,11 +213,11 @@ export default function DirectionsSection() {
                     Записаться
                   </button>
                   <button
-                    onClick={handleAppDownload}
+                    onClick={() => handleDetailsClick(direction, 'direction')}
                     className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
-                    title="Скачать приложение"
+                    title="Подробнее"
                   >
-                    <Download className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </button>
                 </div>
               </div>
@@ -284,24 +291,13 @@ export default function DirectionsSection() {
                     >
                       Записаться
                     </button>
-                    <div className="flex gap-2">
-                      <a
-                        href={`tel:${selectedClub.phone}`}
-                        className="px-3 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
-                        title="Позвонить"
-                      >
-                        <Phone className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                      </a>
-                      <a
-                        href={selectedClub.whatsapp}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-3 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:text-green-500 transition-all duration-300 group"
-                        title="WhatsApp"
-                      >
-                        <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                      </a>
-                    </div>
+                    <button
+                      onClick={() => handleDetailsClick(trainer, 'trainer')}
+                      className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
+                      title="Подробнее"
+                    >
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -408,6 +404,124 @@ export default function DirectionsSection() {
         onClose={() => setIsScheduleModalOpen(false)}
         directionId={selectedDirectionId}
       />
+
+      {/* Details Modal */}
+      {isDetailsModalOpen && selectedDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {selectedDetails.title}
+                </h2>
+                <button
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <ArrowRight className="w-6 h-6 rotate-45" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Description */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Описание</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {selectedDetails.description}
+                  </p>
+                </div>
+
+                {/* Trainer info for directions */}
+                {selectedDetails.type === 'direction' && selectedDetails.trainer && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Тренер</h3>
+                    <p className="text-gray-600">{selectedDetails.trainer}</p>
+                  </div>
+                )}
+
+                {/* Schedule for directions */}
+                {selectedDetails.type === 'direction' && selectedDetails.schedule && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Расписание</h3>
+                    <div className="space-y-2">
+                      {selectedDetails.schedule.map((time: string, index: number) => (
+                        <div key={index} className="bg-orange-50 px-3 py-2 rounded-lg">
+                          <span className="text-orange-800 font-medium">{time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Trainer details for trainers */}
+                {selectedDetails.type === 'trainer' && (
+                  <>
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Специализация</h3>
+                      <p className="text-orange-600 font-medium">{selectedDetails.specialty}</p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Опыт</h3>
+                      <p className="text-gray-600">{selectedDetails.experience}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Сертификации</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedDetails.certifications.map((cert: string, index: number) => (
+                          <span key={index} className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
+                            {cert}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Контакты</h3>
+                      <div className="flex gap-4">
+                        <a
+                          href={`tel:${selectedClub.phone}`}
+                          className="flex items-center gap-2 text-orange-600 hover:text-orange-700 transition-colors"
+                        >
+                          <Phone className="w-4 h-4" />
+                          Позвонить
+                        </a>
+                        <a
+                          href={selectedClub.whatsapp}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          WhatsApp
+                        </a>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* App download suggestion */}
+                <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 text-white">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Download className="w-6 h-6" />
+                    <h3 className="text-lg font-semibold">Скачайте наше приложение</h3>
+                  </div>
+                  <p className="text-orange-100 mb-4">
+                    Управляйте записями, отслеживайте расписание и получайте уведомления
+                  </p>
+                  <button
+                    onClick={handleAppDownload}
+                    className="bg-white text-orange-600 font-semibold py-2 px-4 rounded-lg hover:bg-orange-50 transition-colors"
+                  >
+                    Скачать приложение
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
