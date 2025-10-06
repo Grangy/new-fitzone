@@ -64,21 +64,6 @@ export default function HeroSection() {
     setIsVideoPlaying(false)
   }
 
-  const handleAppDownload = () => {
-    // Определяем устройство и открываем соответствующее приложение
-    const userAgent = navigator.userAgent || navigator.vendor || ''
-    
-    if (/iPad|iPhone|iPod/.test(userAgent)) {
-      // iOS
-      window.open('https://apps.apple.com/ru/app/fitzone/id6477537132', '_blank')
-    } else if (/android/i.test(userAgent)) {
-      // Android
-      window.open('https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru', '_blank')
-    } else {
-      // Desktop - открываем App Store по умолчанию
-      window.open('https://apps.apple.com/ru/app/fitzone/id6477537132', '_blank')
-    }
-  }
 
   const handleBookingClick = () => {
     setIsBookingModalOpen(true)

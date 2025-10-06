@@ -24,7 +24,18 @@ export default function DirectionsSection() {
     description: string;
   } | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-  const [selectedDetails, setSelectedDetails] = useState<any>(null)
+  const [selectedDetails, setSelectedDetails] = useState<{
+    title?: string;
+    name?: string;
+    description?: string;
+    bio?: string;
+    trainer?: string;
+    schedule?: string[];
+    specialty?: string;
+    experience?: string;
+    certifications?: string[];
+    type: 'direction' | 'trainer';
+  } | null>(null)
   const { getAnimationConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
   const { selectedClub } = useClub()
@@ -61,10 +72,6 @@ export default function DirectionsSection() {
     setIsBookingModalOpen(true)
   }
 
-  const handleScheduleClick = (directionId: string) => {
-    setSelectedDirectionId(directionId)
-    setIsScheduleModalOpen(true)
-  }
 
   const handleAppDownload = () => {
     // Определяем устройство и открываем соответствующее приложение
@@ -87,7 +94,17 @@ export default function DirectionsSection() {
     setIsBookingModalOpen(true)
   }
 
-  const handleDetailsClick = (item: any, type: 'direction' | 'trainer') => {
+  const handleDetailsClick = (item: {
+    title?: string;
+    name?: string;
+    description?: string;
+    bio?: string;
+    trainer?: string;
+    schedule?: string[];
+    specialty?: string;
+    experience?: string;
+    certifications?: string[];
+  }, type: 'direction' | 'trainer') => {
     setSelectedDetails({ ...item, type })
     setIsDetailsModalOpen(true)
   }
@@ -214,16 +231,6 @@ export default function DirectionsSection() {
                   <span>📊 {direction.level}</span>
                 </div>
                 
-                {direction.schedule && (
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600 mb-2">Расписание:</p>
-                    <div className="space-y-1">
-                      {direction.schedule.map((time, timeIndex) => (
-                        <p key={timeIndex} className="text-xs text-gray-500">{time}</p>
-                      ))}
-                    </div>
-                  </div>
-                )}
                 
                 
                   <div className="flex gap-3">
@@ -445,7 +452,7 @@ export default function DirectionsSection() {
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {selectedDetails.title}
+                  {selectedDetails.title || selectedDetails.name}
                 </h2>
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}
@@ -460,7 +467,7 @@ export default function DirectionsSection() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Описание</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {selectedDetails.description}
+                    {selectedDetails.description || selectedDetails.bio}
                   </p>
                 </div>
 
@@ -502,7 +509,7 @@ export default function DirectionsSection() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Сертификации</h3>
                       <div className="flex flex-wrap gap-2">
-                        {selectedDetails.certifications.map((cert: string, index: number) => (
+                        {selectedDetails.certifications?.map((cert: string, index: number) => (
                           <span key={index} className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
                             {cert}
                           </span>
