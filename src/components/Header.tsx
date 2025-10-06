@@ -21,6 +21,21 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isClubDropdownOpen) {
+        const target = event.target as Element
+        if (!target.closest('.club-dropdown')) {
+          setIsClubDropdownOpen(false)
+        }
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isClubDropdownOpen])
+
   // Progressive club selection function
   const selectClub = (club: ClubData) => {
     setSelectedClub(club)
@@ -92,7 +107,7 @@ export default function Header() {
           {/* Club Selector & Contact Info */}
           <div className="hidden lg:flex items-center gap-6">
             {/* Club Selector */}
-            <div className="relative">
+            <div className="relative club-dropdown">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -104,7 +119,7 @@ export default function Header() {
                 }`}
               >
                 <MapPin className="w-4 h-4" />
-                <span className="font-medium">{selectedClub.name}</span>
+                <span className="font-medium">Выбрать клуб</span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
                   isClubDropdownOpen ? 'rotate-180' : ''
                 }`} />
@@ -123,12 +138,26 @@ export default function Header() {
                       <button
                         key={club.id}
                         onClick={() => selectClub(club)}
-                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 ${
-                          selectedClub.id === club.id ? 'bg-orange-50 text-orange-600' : 'text-gray-700'
+                        className={`w-full px-4 py-4 text-left hover:bg-orange-50 transition-all duration-200 border-b border-gray-100 last:border-b-0 ${
+                          selectedClub.id === club.id 
+                            ? 'bg-orange-50 text-orange-600 border-l-4 border-l-orange-500' 
+                            : 'text-gray-700 hover:text-orange-600'
                         }`}
                       >
-                        <div className="font-medium">{club.name}</div>
-                        <div className="text-sm text-gray-500">{club.address}</div>
+                        <div className="flex items-start gap-3">
+                          <MapPin className={`w-5 h-5 mt-0.5 ${
+                            selectedClub.id === club.id ? 'text-orange-500' : 'text-gray-400'
+                          }`} />
+                          <div className="flex-1">
+                            <div className="font-semibold text-base mb-1">{club.name}</div>
+                            <div className="text-sm text-gray-600 leading-relaxed">{club.address}</div>
+                            {selectedClub.id === club.id && (
+                              <div className="text-xs text-orange-500 font-medium mt-1">
+                                ✓ Выбран
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </button>
                     ))}
                   </motion.div>
@@ -233,20 +262,35 @@ export default function Header() {
             >
               {/* Club Selector for Mobile */}
               <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-500 mb-3">Выберите клуб:</h3>
-                <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-500 mb-3 flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  Выберите клуб:
+                </h3>
+                <div className="space-y-3">
                   {clubs.map((club) => (
                     <button
                       key={club.id}
                       onClick={() => selectClub(club)}
-                      className={`w-full text-left p-3 rounded-lg transition-all duration-300 ${
+                      className={`w-full text-left p-4 rounded-xl transition-all duration-300 border-2 ${
                         selectedClub.id === club.id
-                          ? 'bg-orange-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-orange-500 text-white border-orange-500'
+                          : 'bg-gray-100 text-gray-700 hover:bg-orange-50 hover:border-orange-200 border-gray-200'
                       }`}
                     >
-                      <div className="font-medium">{club.name}</div>
-                      <div className="text-sm opacity-75">{club.address}</div>
+                      <div className="flex items-start gap-3">
+                        <MapPin className={`w-5 h-5 mt-0.5 ${
+                          selectedClub.id === club.id ? 'text-white' : 'text-gray-400'
+                        }`} />
+                        <div className="flex-1">
+                          <div className="font-semibold text-base mb-1">{club.name}</div>
+                          <div className="text-sm opacity-75 leading-relaxed">{club.address}</div>
+                          {selectedClub.id === club.id && (
+                            <div className="text-xs text-orange-100 font-medium mt-1">
+                              ✓ Выбран
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </button>
                   ))}
                 </div>
