@@ -92,6 +92,32 @@ export default function DirectionsSection() {
     setIsDetailsModalOpen(true)
   }
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setIsDetailsModalOpen(false)
+    }
+  }
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsDetailsModalOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isDetailsModalOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'unset'
+    }
+  }, [isDetailsModalOpen])
+
   return (
     <section id="directions" className="section-padding bg-white">
       <div className="container-custom">
@@ -407,8 +433,14 @@ export default function DirectionsSection() {
 
       {/* Details Modal */}
       {isDetailsModalOpen && selectedDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={handleOverlayClick}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">
