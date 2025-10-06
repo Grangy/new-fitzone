@@ -101,82 +101,6 @@ export default function DirectionsSection() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             Групповые и индивидуальные тренировки. Выбери то, что подходит именно тебе
           </p>
-          <div className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-            <p className="text-orange-800 font-medium">
-              📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
-            </p>
-          </div>
-          
-          {/* Quiz Button */}
-          <motion.button
-            onClick={() => setShowQuiz(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-          >
-            <Sparkles className="w-6 h-6" />
-            <span>Пройти квиз &ldquo;Найди свое направление&rdquo;</span>
-            <div className="bg-white/20 px-3 py-1 rounded-full text-sm">
-              2 мин
-            </div>
-          </motion.button>
-          
-          {/* Quiz Result Hint */}
-          {quizResult && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl"
-            >
-              <p className="text-green-800 text-sm">
-                ✨ Квиз пройден! Рекомендуем: <strong>{quizResult.direction}</strong>
-              </p>
-            </motion.div>
-          )}
-        </motion.div>
-
-        {/* App Download Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          viewport={{ once: true }}
-          className="mb-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white text-center"
-        >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Download className="w-8 h-8" />
-            <h3 className="text-2xl font-bold">Скачайте наше приложение</h3>
-          </div>
-          <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
-            Записывайтесь на групповые тренировки, отслеживайте расписание и управляйте абонементом в удобном мобильном приложении
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-              onClick={handleAppDownload}
-              className="bg-white text-orange-600 font-bold py-3 px-6 rounded-xl hover:bg-orange-50 transition-colors flex items-center gap-2"
-            >
-              <ExternalLink className="w-5 h-5" />
-              Скачать приложение
-            </button>
-            <div className="flex gap-4 text-sm">
-              <a 
-                href="https://apps.apple.com/ru/app/fitzone/id6477537132" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-orange-200 transition-colors"
-              >
-                <span>📱</span> App Store
-              </a>
-              <a 
-                href="https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-orange-200 transition-colors"
-              >
-                <span>🤖</span> Google Play
-              </a>
-            </div>
-          </div>
         </motion.div>
 
         {/* Group Trainings */}
@@ -349,6 +273,98 @@ export default function DirectionsSection() {
             ))}
           </div>
         </div>
+
+        {/* Club Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-xl text-center"
+        >
+          <p className="text-orange-800 font-medium">
+            📍 Клуб: <span className="font-bold">{selectedClub.name}</span> - {selectedClub.address}
+          </p>
+        </motion.div>
+
+        {/* Quiz Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="mb-8 text-center"
+        >
+          <motion.button
+            onClick={() => setShowQuiz(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <Sparkles className="w-6 h-6" />
+            <span>Пройти квиз &ldquo;Найди свое направление&rdquo;</span>
+            <div className="bg-white/20 px-3 py-1 rounded-full text-sm">
+              2 мин
+            </div>
+          </motion.button>
+          
+          {/* Quiz Result Hint */}
+          {quizResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-4 bg-green-50 border border-green-200 rounded-xl"
+            >
+              <p className="text-green-800 text-sm">
+                ✨ Квиз пройден! Рекомендуем: <strong>{quizResult.direction}</strong>
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* App Download Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+          className="mb-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white text-center"
+        >
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Download className="w-8 h-8" />
+            <h3 className="text-2xl font-bold">Скачайте наше приложение</h3>
+          </div>
+          <p className="text-orange-100 mb-6 max-w-2xl mx-auto">
+            Записывайтесь на групповые тренировки, отслеживайте расписание и управляйте абонементом в удобном мобильном приложении
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={handleAppDownload}
+              className="bg-white text-orange-600 font-bold py-3 px-6 rounded-xl hover:bg-orange-50 transition-colors flex items-center gap-2"
+            >
+              <ExternalLink className="w-5 h-5" />
+              Скачать приложение
+            </button>
+            <div className="flex gap-4 text-sm">
+              <a 
+                href="https://apps.apple.com/ru/app/fitzone/id6477537132" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-orange-200 transition-colors"
+              >
+                <span>📱</span> App Store
+              </a>
+              <a 
+                href="https://play.google.com/store/apps/details?id=fitzone.client.app&hl=ru" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-orange-200 transition-colors"
+              >
+                <span>🤖</span> Google Play
+              </a>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Special Offer */}
         <motion.div
