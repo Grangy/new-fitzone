@@ -165,7 +165,7 @@ export default function VideoModal({ isOpen, onClose, videoSrc, poster }: VideoM
                     ref={videoRef}
                     src={videoSrc}
                     poster={poster}
-                    className="w-full h-full object-cover cursor-pointer brightness-75"
+                    className="w-full h-full object-cover cursor-pointer brightness-75 md:brightness-75"
                     muted={true}
                     playsInline
                     preload="metadata"
