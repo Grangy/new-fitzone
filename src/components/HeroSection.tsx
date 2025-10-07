@@ -115,8 +115,8 @@ export default function HeroSection() {
               onError={handleVideoError}
               autoPlay={true}
             />
-            {/* Dark overlay for better text readability */}
-            <div className="absolute inset-0 bg-black bg-opacity-40 pointer-events-none" />
+            {/* Dark overlay for better text readability - hidden on mobile */}
+            <div className="absolute inset-0 bg-black bg-opacity-40 pointer-events-none hidden md:block" />
           </>
         ) : (
           <div 
