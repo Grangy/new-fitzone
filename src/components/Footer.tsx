@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Phone, Mail, MapPin, Instagram, Facebook, MessageCircle, Send } from 'lucide-react'
+import { Phone, Mail, MapPin, MessageCircle, Send } from 'lucide-react'
+import { FaVk } from 'react-icons/fa'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 import { useClub } from '../contexts/ClubContext'
 import { useForceUpdate } from '../hooks/useForceUpdate'
@@ -30,17 +31,14 @@ export default function Footer() {
   const socialLinks = [
     { icon: MessageCircle, href: selectedClub.whatsapp, label: 'WhatsApp' },
     { icon: Send, href: selectedClub.telegram, label: 'Telegram' },
-    { icon: Instagram, href: selectedClub.instagram, label: 'Instagram' },
-    { icon: Facebook, href: selectedClub.vk, label: 'VKontakte' }
+    { icon: FaVk, href: selectedClub.vk, label: 'VKontakte' }
   ]
 
   const quickLinks = [
     { name: 'Главная', href: '#home' },
-    { name: 'Преимущества', href: '#advantages' },
+    { name: 'О нас', href: '#about-us' },
     { name: 'Направления', href: '#directions' },
-    { name: 'Тренеры', href: '#trainers' },
     { name: 'Отзывы', href: '#reviews' },
-    { name: 'Галерея', href: '#gallery' },
     { name: 'Контакты', href: '#contact-form' }
   ]
 

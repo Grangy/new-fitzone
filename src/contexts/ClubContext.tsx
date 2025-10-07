@@ -16,6 +16,7 @@ export interface ClubData {
   directions: Direction[]
   photos: string[]
   description: string
+  coordinates: { lat: number; lng: number }
 }
 
 export interface Trainer {
@@ -61,13 +62,14 @@ const clubs: ClubData[] = [
   {
     id: 'pionerskaya',
     name: 'ул. Пионерская',
-    address: 'ул. Пионерская, 15',
+    address: 'Пионерская ул., 2В, Новороссийск',
     phone: '+7 (8617) 123-45-67',
     whatsapp: 'https://wa.me/786171234567',
     telegram: 'https://t.me/fitzone_pionerskaya',
     vk: 'https://vk.com/fitzone_pionerskaya',
     instagram: 'https://instagram.com/fitzone_pionerskaya',
     description: 'Современный фитнес-клуб в центре города с полным спектром услуг',
+    coordinates: { lat: 44.687617, lng: 37.791586 },
     trainers: [
       {
         id: 'anna-pionerskaya',
@@ -167,13 +169,14 @@ const clubs: ClubData[] = [
   {
     id: 'mira',
     name: 'ул. Мира',
-    address: 'ул. Мира, 42',
+    address: 'ул. Мира, 1А, Новороссийск (этаж 2)',
     phone: '+7 (8617) 234-56-78',
     whatsapp: 'https://wa.me/786172345678',
     telegram: 'https://t.me/fitzone_mira',
     vk: 'https://vk.com/fitzone_mira',
     instagram: 'https://instagram.com/fitzone_mira',
     description: 'Новый современный фитнес-центр с передовым оборудованием',
+    coordinates: { lat: 44.726687, lng: 37.767512 },
     trainers: [
       {
         id: 'elena-mira',

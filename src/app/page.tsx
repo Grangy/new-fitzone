@@ -5,10 +5,10 @@ import { ClubProvider } from '../contexts/ClubContext'
 
 // Lazy load non-critical components
 const PromoBanner = dynamic(() => import('../components/PromoBanner'), { ssr: true })
-const AdvantagesSection = dynamic(() => import('../components/AdvantagesSection'), { ssr: true })
+const AboutUsSection = dynamic(() => import('../components/AboutUsSection'), { ssr: true })
 const DirectionsSection = dynamic(() => import('../components/DirectionsSection'), { ssr: true })
+const SubscriptionsSection = dynamic(() => import('../components/SubscriptionsSection'), { ssr: true })
 const ReviewsSection = dynamic(() => import('../components/ReviewsSection'), { ssr: true })
-const ClubPhotos = dynamic(() => import('../components/ClubPhotos'), { ssr: true })
 const ContactForm = dynamic(() => import('../components/ContactForm'), { ssr: true })
 const Footer = dynamic(() => import('../components/Footer'), { ssr: true })
 
@@ -19,11 +19,11 @@ export default function Home() {
       <main className="min-h-screen prevent-overflow">
         <HeroSection />
         <PromoBanner />
-        <AdvantagesSection />
         <DirectionsSection />
+        <SubscriptionsSection />
         <ReviewsSection />
-        <ClubPhotos />
         <ContactForm />
+        <AboutUsSection />
         <Footer />
       </main>
     </ClubProvider>

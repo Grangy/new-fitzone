@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Phone, MapPin, ChevronDown, Instagram, MessageCircle, Send } from 'lucide-react'
+import { Menu, X, Phone, MapPin, ChevronDown, MessageCircle, Send } from 'lucide-react'
+import { FaVk } from 'react-icons/fa'
 import { useClub, ClubData } from '../contexts/ClubContext'
 import Image from 'next/image'
 
@@ -51,7 +52,9 @@ export default function Header() {
 
   const navigationItems = [
     { name: 'Главная', href: 'home' },
+    { name: 'О нас', href: 'about-us' },
     { name: 'Тренировки', href: 'directions' },
+    { name: 'Абонементы', href: 'subscriptions' },
     { name: 'Контакты', href: 'contact-form' }
   ]
 
@@ -225,7 +228,7 @@ export default function Header() {
                 </motion.a>
 
                 <motion.a
-                  href={selectedClub.instagram}
+                  href={selectedClub.vk}
                   target="_blank"
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1 }}
@@ -235,9 +238,9 @@ export default function Header() {
                       ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       : 'bg-white/20 text-white hover:bg-white/30'
                   }`}
-                  aria-label="Instagram"
+                  aria-label="ВКонтакте"
                 >
-                  <Instagram className="w-5 h-5" />
+                  <FaVk className="w-5 h-5" />
                 </motion.a>
               </div>
             </div>

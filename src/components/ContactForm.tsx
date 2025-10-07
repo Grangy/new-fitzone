@@ -1,19 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock, Send, Smartphone, QrCode } from 'lucide-react'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
-
-const directions = [
-  'Йога',
-  'Пилатес', 
-  'Кроссфит',
-  'Персональные тренировки',
-  'Групповые программы',
-  'Функциональный тренинг',
-  'Пробное занятие'
-]
+import { useClub } from '../contexts/ClubContext'
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -24,8 +15,16 @@ export default function ContactForm() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [directions, setDirections] = useState<string[]>([])
   const { getAnimationConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
+  const { selectedClub } = useClub()
+
+  // Parse all directions from selected club
+  useEffect(() => {
+    const allDirections = selectedClub.directions.map(dir => dir.title)
+    setDirections(allDirections)
+  }, [selectedClub])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

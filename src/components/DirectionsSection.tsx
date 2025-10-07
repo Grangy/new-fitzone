@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle, X } from 'lucide-react'
+import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle, X, ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
 import FitnessQuiz from './FitnessQuiz'
 import ScheduleModal from './ScheduleModal'
+import PaymentModal from './PaymentModal'
 import { useMobileOptimizedAnimations } from '../hooks/useDeviceDetection'
 import { useClub } from '../contexts/ClubContext'
 import { useForceUpdate } from '../hooks/useForceUpdate'
@@ -24,6 +25,7 @@ export default function DirectionsSection() {
     description: string;
   } | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [selectedDetails, setSelectedDetails] = useState<{
     title?: string;
     name?: string;
@@ -166,7 +168,7 @@ export default function DirectionsSection() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
-            Наши <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">тренировки</span>
+            Наши <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">направления</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             Групповые и индивидуальные тренировки. Выбери то, что подходит именно тебе
@@ -234,8 +236,13 @@ export default function DirectionsSection() {
                   className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-semibold text-gray-900">
-                  {direction.price}
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg">
+                    8 тренировок
+                  </div>
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg">
+                    12 тренировок
+                  </div>
                 </div>
               </div>
               
@@ -307,8 +314,8 @@ export default function DirectionsSection() {
                     className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-semibold text-gray-900">
-                    {trainer.experience}
+                  <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg">
+                    Индивидуальная карта
                   </div>
                 </div>
                 
@@ -508,13 +515,6 @@ export default function DirectionsSection() {
                   </p>
                 </div>
 
-                {/* Trainer info for directions */}
-                {selectedDetails.type === 'direction' && selectedDetails.trainer && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Тренер</h3>
-                    <p className="text-gray-600">{selectedDetails.trainer}</p>
-                  </div>
-                )}
 
                 {/* Schedule for directions */}
                 {selectedDetails.type === 'direction' && selectedDetails.schedule && (
@@ -578,18 +578,47 @@ export default function DirectionsSection() {
                   </>
                 )}
 
+                {/* Buy subscription buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setIsDetailsModalOpen(false)
+                      setIsPaymentModalOpen(true)
+                    }}
+                    className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-4 px-6 rounded-xl font-semibold flex items-center justify-center gap-3 hover:from-orange-600 hover:to-red-600 transition-all shadow-lg"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    <span>8 тренировок - 2 500₽</span>
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setIsDetailsModalOpen(false)
+                      setIsPaymentModalOpen(true)
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold flex items-center justify-center gap-3 hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    <span>12 тренировок - 3 500₽</span>
+                  </motion.button>
+                </div>
+
                 {/* App download suggestion */}
-                <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 text-white">
+                <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl p-4">
                   <div className="flex items-center gap-3 mb-3">
-                    <Download className="w-6 h-6" />
-                    <h3 className="text-lg font-semibold">Скачайте наше приложение</h3>
+                    <Download className="w-6 h-6 text-gray-600" />
+                    <h3 className="text-lg font-semibold text-gray-800">Скачайте наше приложение</h3>
                   </div>
-                  <p className="text-orange-100 mb-4">
+                  <p className="text-gray-600 mb-4">
                     Управляйте записями, отслеживайте расписание и получайте уведомления
                   </p>
                   <button
                     onClick={handleAppDownload}
-                    className="bg-white text-orange-600 font-semibold py-2 px-4 rounded-lg hover:bg-orange-50 transition-colors"
+                    className="bg-gray-800 text-white font-semibold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
                   >
                     Скачать приложение
                   </button>
@@ -599,6 +628,23 @@ export default function DirectionsSection() {
           </div>
         </div>
       )}
+
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        subscription={{
+          title: "8 тренировок",
+          price: "2 500₽",
+          description: "Идеально для начинающих",
+          features: [
+            "8 групповых тренировок",
+            "Доступ к залу",
+            "Персональная консультация",
+            "Мобильное приложение"
+          ]
+        }}
+      />
     </section>
   )
 }

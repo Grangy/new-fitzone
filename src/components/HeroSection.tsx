@@ -110,7 +110,7 @@ export default function HeroSection() {
               ref={videoRef}
               src="/video.mp4"
               poster="/video-poster.jpg"
-              className="w-full h-full object-cover brightness-75"
+              className="w-full h-full object-cover brightness-35"
               onLoad={handleVideoLoad}
               onError={handleVideoError}
               autoPlay={true}
@@ -175,9 +175,16 @@ export default function HeroSection() {
             Только то, что нужно тебе. Выбирай направления, тренеров и время — плати только за результат
           </p>
           <div className="mb-8">
-            <p className="text-lg text-gray-300 mb-2">
-              📍 {selectedClub.address}
-            </p>
+            <button
+              onClick={() => {
+                const { lat, lng } = selectedClub.coordinates
+                const url = `https://yandex.ru/maps/?rtext=~${lat},${lng}&rtt=auto`
+                window.open(url, '_blank')
+              }}
+              className="text-lg text-gray-300 mb-2 hover:text-orange-400 transition-colors duration-300 cursor-pointer underline decoration-dotted underline-offset-4"
+            >
+              {selectedClub.address}
+            </button>
             <p className="text-sm text-gray-400">
               {selectedClub.description}
             </p>
