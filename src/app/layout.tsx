@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import { siteConfig } from "../lib/siteConfig";
+import AnalyticsOptimized from "../components/AnalyticsOptimized";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -44,19 +45,29 @@ export default function RootLayout({
         <meta name="theme-color" content={siteConfig.settings.themeColor} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         
+        {/* Critical CSS inline */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            *{box-sizing:border-box}body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;color:#333;background-color:#fff}.header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,0.1)}.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;text-align:center;padding:2rem}.hero h1{font-size:clamp(2rem,5vw,4rem);font-weight:700;margin-bottom:1rem;line-height:1.2}.hero p{font-size:clamp(1rem,2.5vw,1.5rem);margin-bottom:2rem;opacity:0.9}.btn{display:inline-block;padding:0.75rem 2rem;background:#ff6b35;color:white;text-decoration:none;border-radius:8px;font-weight:600;transition:all 0.3s ease;border:none;cursor:pointer}.btn:hover{background:#e55a2b;transform:translateY(-2px)}@media (max-width:768px){.hero{padding:1rem}.btn{padding:0.6rem 1.5rem;font-size:0.9rem}}
+          `
+        }} />
+        
         {/* Preload critical resources */}
         <link rel="preload" href="/logo.png" as="image" type="image/png" />
         <link rel="preload" href="/images/hero-bg.jpg" as="image" type="image/jpeg" />
         <link rel="preload" href="/images/promo.jpg" as="image" type="image/jpeg" />
+        
         
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//mc.yandex.ru" />
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <AnalyticsOptimized>
+          {children}
+        </AnalyticsOptimized>
         
-        {/* Google Analytics */}
+        {/* Google Analytics - Optimized */}
         {gaId && (
           <>
             <Script
@@ -68,27 +79,14 @@ export default function RootLayout({
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${gaId}');
+                gtag('config', '${gaId}', {
+                  page_title: document.title,
+                  page_location: window.location.href,
+                });
               `}
             </Script>
           </>
         )}
-
-        {/* Yandex.Metrica - Lazy loaded */}
-        <Script id="yandex-metrica" strategy="lazyOnload">
-          {`
-            (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-            ym(XXXXXX, "init", {
-                 clickmap:true,
-                 trackLinks:true,
-                 accurateTrackBounce:true,
-                 webvisor:true
-            });
-          `}
-        </Script>
         
         {/* Structured Data */}
         <Script

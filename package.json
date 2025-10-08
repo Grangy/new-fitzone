@@ -8,7 +8,21 @@
     "start": "next start",
     "lint": "next lint",
     "dev:turbo": "next dev --turbopack",
-    "build:turbo": "next build --turbopack"
+    "build:turbo": "next build --turbopack",
+    "analyze": "ANALYZE=true next build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "not ie <= 11"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",

@@ -1,0 +1,106 @@
+/* Критические CSS стили для выше-the-fold контента */
+
+/* Базовые стили для быстрой загрузки */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+}
+
+/* Критические стили для header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Критические стили для hero секции */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* Критические стили для кнопок */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: #ff6b35;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #e55a2b;
+  transform: translateY(-2px);
+}
+
+/* Утилиты для скрытия контента до загрузки */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Оптимизация для мобильных устройств */
+@media (max-width: 768px) {
+  .hero {
+    padding: 1rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Стили для предотвращения FOUC */
+.no-js .js-only {
+  display: none;
+}
+
+.js .no-js-only {
+  display: none;
+}
