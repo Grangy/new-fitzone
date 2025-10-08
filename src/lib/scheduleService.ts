@@ -113,16 +113,16 @@ export function mapClubIdToBranch(clubId: string): BranchName | null {
 
 // Маппинг имен тренеров к их фотографиям
 const trainerPhotoMapping: Record<string, string> = {
-  'АГАНИНА ЮЛИЯ': '/images/trainers/АганинаЮлия.jpeg',
-  'ДАТЛЫ РУСЛАН': '/images/trainers/ДатлыРуслан.jpeg',
-  'ОСАДЧАЯ ГАЛИНА': '/images/trainers/ОсадчаяГалина.jpeg',
-  'ПИРОВ АХМАД': '/images/trainers/Пиров Ахмад.jpeg',
-  'ПОГОСЯН ВЯЧЕСЛАВ': '/images/trainers/ПогосянВячеслав.jpeg',
-  'ПОЛЕТАЕВА ЕЛЕНА': '/images/trainers/Полетаева елена.jpeg',
-  'СИМОНОВА ВЕРОНИКА': '/images/trainers/СимоноваВероника.jpeg',
-  'ТУЖИЛИН ВИТАЛИЙ': '/images/trainers/ТужилинВиталий.jpeg',
-  'ЧЕРТКОВ ЛЕОНИД': '/images/trainers/ЧертковЛеонид.jpeg',
-  'ЧЕЧЕЛЬ МАРИЯ': '/images/trainers/Чечель.jpeg'
+  'АГАНИНА ЮЛИЯ': '/images/trainers/aganina_yulia.jpeg',
+  'ДАТЛЫ РУСЛАН': '/images/trainers/datly_ruslan.jpeg',
+  'ОСАДЧАЯ ГАЛИНА': '/images/trainers/osadchaya_galina.jpeg',
+  'ПИРОВ АХМАД': '/images/trainers/pirov_ahmad.jpeg',
+  'ПОГОСЯН ВЯЧЕСЛАВ': '/images/trainers/pogosyan_vyacheslav.jpeg',
+  'ПОЛЕТАЕВА ЕЛЕНА': '/images/trainers/poletaeva_elena.jpeg',
+  'СИМОНОВА ВЕРОНИКА': '/images/trainers/simonova_veronika.jpeg',
+  'ТУЖИЛИН ВИТАЛИЙ': '/images/trainers/tuzhilin_vitaliy.jpeg',
+  'ЧЕРТКОВ ЛЕОНИД': '/images/trainers/chertkov_leonid.jpeg',
+  'ЧЕЧЕЛЬ МАРИЯ': '/images/trainers/chechel.jpeg'
 }
 
 // Функция для получения фото тренера
