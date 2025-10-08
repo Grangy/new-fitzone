@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 
@@ -15,6 +15,10 @@ interface TrainersCarouselProps {
   trainers: Trainer[]
   onBookingClick: (trainerId: string) => void
   onDetailsClick: (trainer: Trainer, type: 'trainer') => void
+  selectedClub?: {
+    phone: string
+    whatsapp: string
+  } // Опциональный параметр для совместимости
 }
 
 export default function TrainersCarousel({ 
@@ -26,8 +30,6 @@ export default function TrainersCarousel({
   const [visibleSlides, setVisibleSlides] = useState(1)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
-  const [mouseStart, setMouseStart] = useState(0)
-  const [isDragging, setIsDragging] = useState(false)
   const carouselRef = useRef<HTMLDivElement>(null)
 
   // Получаем количество оригинальных тренеров (без дублирования)
@@ -71,6 +73,8 @@ export default function TrainersCarousel({
 
   // Обновляем количество видимых слайдов при изменении размера окна
   useState(() => {
+    if (typeof window === 'undefined') return
+    
     const updateVisibleSlides = () => {
       setVisibleSlides(getVisibleSlides())
     }

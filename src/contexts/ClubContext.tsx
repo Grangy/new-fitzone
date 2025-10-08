@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { siteConfig } from '../lib/siteConfig'
-import { getTrainersSchedule, getGroupPrograms, formatSchedule, mapClubIdToBranch, TrainerSchedule, GroupProgram, getTrainersWithPhotos } from '../lib/scheduleService'
+import { getGroupPrograms, formatSchedule, TrainerSchedule, GroupProgram, getTrainersWithPhotos } from '../lib/scheduleService'
 
 export interface ClubData {
   id: string
