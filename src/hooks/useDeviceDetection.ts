@@ -44,24 +44,48 @@ export function useDeviceDetection() {
 export function useMobileOptimizedAnimations() {
   const { isMobile } = useDeviceDetection()
   
+  // Проверяем предпочтения пользователя для уменьшенных анимаций
+  const prefersReducedMotion = typeof window !== 'undefined' && 
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  
   // Оптимизированные настройки анимаций для мобильных
   const getAnimationConfig = () => {
-    if (isMobile) {
+    if (prefersReducedMotion) {
+      // Минимальные анимации для пользователей с ограниченными возможностями
       return {
-        // Более консервативные настройки для мобильных
         viewport: {
           once: true,
-          margin: "-50px", // Больший отступ для предотвращения повторных срабатываний
-          amount: 0.1      // Меньший порог видимости
+          margin: "-100px",
+          amount: 0.05
         },
         transition: {
-          duration: 0.5,   // Быстрее на мобильных
+          duration: 0.2,
           ease: [0.25, 0.46, 0.45, 0.94] as const,
           type: "tween" as const
         },
         initial: {
+          opacity: 0.8,
+          y: 5
+        }
+      }
+    }
+    
+    if (isMobile) {
+      return {
+        // Очень плавные и медленные анимации для мобильных
+        viewport: {
+          once: true,
+          margin: "-80px", // Больший отступ для предотвращения повторных срабатываний
+          amount: 0.05      // Очень маленький порог видимости
+        },
+        transition: {
+          duration: 1.2,   // Медленнее и плавнее на мобильных
+          ease: [0.16, 1, 0.3, 1] as const, // Более плавная кривая
+          type: "tween" as const
+        },
+        initial: {
           opacity: 0,
-          y: 20  // Меньшее расстояние для мобильных
+          y: 10  // Очень маленькое расстояние для мобильных
         }
       }
     }
@@ -70,20 +94,48 @@ export function useMobileOptimizedAnimations() {
     return {
       viewport: {
         once: true,
-        margin: "-30px",
-        amount: 0.2
+        margin: "-50px",
+        amount: 0.15
       },
       transition: {
-        duration: 0.7,
-        ease: [0.25, 0.46, 0.45, 0.94] as const,
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1] as const,
         type: "tween" as const
       },
       initial: {
         opacity: 0,
-        y: 30
+        y: 20
       }
     }
   }
 
-  return { isMobile, getAnimationConfig }
+  // Функция для получения конфигурации карусели
+  const getCarouselConfig = () => {
+    if (prefersReducedMotion) {
+      return {
+        transition: {
+          duration: 0.3,
+          ease: [0.25, 0.46, 0.45, 0.94] as const
+        }
+      }
+    }
+    
+    if (isMobile) {
+      return {
+        transition: {
+          duration: 0.8, // Более медленные переходы карусели
+          ease: [0.16, 1, 0.3, 1] as const
+        }
+      }
+    }
+    
+    return {
+      transition: {
+        duration: 1.0,
+        ease: [0.16, 1, 0.3, 1] as const
+      }
+    }
+  }
+
+  return { isMobile, getAnimationConfig, getCarouselConfig }
 }

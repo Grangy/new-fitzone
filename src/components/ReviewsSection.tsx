@@ -101,7 +101,7 @@ export default function ReviewsSection() {
                 delay: index * (animationConfig.transition.duration * 0.1)
               }}
               viewport={animationConfig.viewport}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 relative motion-safe"
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative motion-safe"
             >
               <Quote className="w-8 h-8 text-orange-500 mb-4" />
               

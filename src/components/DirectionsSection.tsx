@@ -26,7 +26,6 @@ export default function DirectionsSection() {
   } | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
-  const [currentTrainerIndex, setCurrentTrainerIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const trainerCarouselRef = useRef<HTMLDivElement>(null)
@@ -46,27 +45,50 @@ export default function DirectionsSection() {
     image?: string;
     type: 'direction' | 'trainer';
   } | null>(null)
-  const { getAnimationConfig } = useMobileOptimizedAnimations()
+  const { getAnimationConfig, getCarouselConfig } = useMobileOptimizedAnimations()
   const animationConfig = getAnimationConfig()
+  const carouselConfig = getCarouselConfig()
   const { selectedClub } = useClub()
   const forceUpdate = useForceUpdate()
 
-  // Функция для рандомной сортировки тренеров
-  const getRandomizedTrainers = () => {
-    return [...selectedClub.trainers].sort(() => Math.random() - 0.5)
-  }
+  // Бесконечная карусель - создаем расширенный массив
+  const [randomizedTrainers, setRandomizedTrainers] = useState<typeof selectedClub.trainers>([])
+  const [visibleCount, setVisibleCount] = useState(1)
+  const [currentPosition, setCurrentPosition] = useState(0)
 
-  // Получаем рандомно отсортированных тренеров
-  const randomizedTrainers = getRandomizedTrainers()
+  // Инициализация тренеров
+  useEffect(() => {
+    const trainers = [...selectedClub.trainers].sort(() => Math.random() - 0.5)
+    setRandomizedTrainers(trainers)
+    setCurrentPosition(trainers.length) // Начинаем с середины расширенного массива
+  }, [selectedClub.trainers])
 
-  // Определяем количество видимых элементов в зависимости от размера экрана
+  // Определяем количество видимых элементов
   const getVisibleCount = () => {
-    if (typeof window === 'undefined') return 4
-    return window.innerWidth >= 1024 ? 4 : 1 // 4 на desktop, 1 на mobile
+    if (typeof window === 'undefined') return 1
+    return window.innerWidth >= 1024 ? 4 : 1
   }
 
-  const visibleCount = getVisibleCount()
-  const maxIndex = Math.max(0, randomizedTrainers.length - visibleCount)
+  // Обновляем видимое количество при изменении размера экрана
+  useEffect(() => {
+    setVisibleCount(getVisibleCount())
+  }, [isMobile])
+
+  // Создаем расширенный массив для бесконечного скролла (5 копий)
+  const createInfiniteArray = () => {
+    if (randomizedTrainers.length === 0) return []
+    return [
+      ...randomizedTrainers, // 1-я копия
+      ...randomizedTrainers, // 2-я копия (начальная позиция)
+      ...randomizedTrainers, // 3-я копия
+      ...randomizedTrainers, // 4-я копия
+      ...randomizedTrainers  // 5-я копия
+    ]
+  }
+
+  const infiniteTrainers = createInfiniteArray()
+  const startPosition = randomizedTrainers.length // Позиция начала (2-я копия)
+  const endPosition = randomizedTrainers.length * 4 // Позиция конца (4-я копия)
 
   // Listen for club changes to trigger re-render
   useEffect(() => {
@@ -74,7 +96,7 @@ export default function DirectionsSection() {
       // Force re-render when club changes
       setSelectedDirection('')
       setQuizResult(null)
-      setCurrentTrainerIndex(0) // Reset carousel index
+      setCurrentPosition(0) // Reset carousel position
       forceUpdate()
     }
 
@@ -82,23 +104,25 @@ export default function DirectionsSection() {
     return () => window.removeEventListener('clubChanged', handleClubChange)
   }, [forceUpdate])
 
-  // Auto-play carousel
+  // Auto-play carousel - бесконечное движение
   useEffect(() => {
-    if (isAutoPlaying && randomizedTrainers.length > visibleCount) {
+    if (isAutoPlaying && infiniteTrainers.length > 0) {
       autoPlayRef.current = setInterval(() => {
-        setCurrentTrainerIndex((prev) => {
-          if (isMobile) {
-            // Обычная карусель для мобильных
-            if (prev >= maxIndex) {
-              return 0 // Reset to beginning
-            }
-            return Math.min(prev + 1, maxIndex)
-          } else {
-            // Бесконечная карусель для ПК
-            return (prev + 1) % (maxIndex + 1)
+        setCurrentPosition((prev) => {
+          const nextPosition = prev + 1
+          
+          // Если дошли до конца 4-й копии, мгновенно возвращаемся к началу 2-й копии
+          if (nextPosition >= endPosition) {
+            // Сначала устанавливаем позицию без анимации
+            setTimeout(() => {
+              setCurrentPosition(startPosition)
+            }, 50)
+            return endPosition
           }
+          
+          return nextPosition
         })
-      }, 6000) // Change slide every 6 seconds
+      }, isMobile ? 3000 : 4000) // Быстрее для непрерывного движения
 
       return () => {
         if (autoPlayRef.current) {
@@ -106,7 +130,7 @@ export default function DirectionsSection() {
         }
       }
     }
-  }, [isAutoPlaying, randomizedTrainers.length, visibleCount, maxIndex, isMobile])
+  }, [isAutoPlaying, infiniteTrainers.length, startPosition, endPosition, isMobile])
 
   // Pause auto-play on hover
   const handleCarouselHover = (isHovering: boolean) => {
@@ -118,14 +142,19 @@ export default function DirectionsSection() {
     const handleResize = () => {
       const newIsMobile = window.innerWidth < 1024
       setIsMobile(newIsMobile)
-      // Reset carousel index when switching between mobile/desktop
-      setCurrentTrainerIndex(0)
+      
+      // Обновляем количество видимых элементов
+      const newVisibleCount = newIsMobile ? 1 : 4
+      setVisibleCount(newVisibleCount)
+      
+      // Сбрасываем позицию карусели к начальной позиции
+      setCurrentPosition(startPosition)
     }
 
     handleResize() // Set initial state
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [startPosition])
 
   // Handle ESC key to close quiz
   useEffect(() => {
@@ -209,23 +238,37 @@ export default function DirectionsSection() {
     }
   }
 
-  // Функции для управления каруселью тренеров
+  // Функции для управления каруселью тренеров - бесконечная навигация
   const nextTrainer = () => {
-    if (isMobile) {
-      setCurrentTrainerIndex((prev) => Math.min(prev + 1, maxIndex))
-    } else {
-      // Бесконечная карусель для ПК
-      setCurrentTrainerIndex((prev) => (prev + 1) % (maxIndex + 1))
-    }
+    setCurrentPosition((prev) => {
+      const nextPosition = prev + 1
+      
+      // Если дошли до конца 4-й копии, мгновенно возвращаемся к началу 2-й копии
+      if (nextPosition >= endPosition) {
+        setTimeout(() => {
+          setCurrentPosition(startPosition)
+        }, 50)
+        return endPosition
+      }
+      
+      return nextPosition
+    })
   }
 
   const prevTrainer = () => {
-    if (isMobile) {
-      setCurrentTrainerIndex((prev) => Math.max(prev - 1, 0))
-    } else {
-      // Бесконечная карусель для ПК
-      setCurrentTrainerIndex((prev) => (prev - 1 + (maxIndex + 1)) % (maxIndex + 1))
-    }
+    setCurrentPosition((prev) => {
+      const prevPosition = prev - 1
+      
+      // Если дошли до начала 2-й копии, мгновенно переходим к концу 4-й копии
+      if (prevPosition < startPosition) {
+        setTimeout(() => {
+          setCurrentPosition(endPosition - 1)
+        }, 50)
+        return startPosition - 1
+      }
+      
+      return prevPosition
+    })
   }
 
   // Функции для обработки свайпа
@@ -357,7 +400,7 @@ export default function DirectionsSection() {
                 delay: index * (animationConfig.transition.duration * 0.1)
               }}
               viewport={animationConfig.viewport}
-              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe cursor-pointer"
+              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 motion-safe cursor-pointer"
               onClick={() => handleDetailsClick(direction, 'direction')}
             >
               <div className="relative overflow-hidden">
@@ -366,7 +409,7 @@ export default function DirectionsSection() {
                   alt={direction.title}
                   width={400}
                   height={192}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="absolute top-4 right-4 flex gap-2">
@@ -441,38 +484,34 @@ export default function DirectionsSection() {
               {/* Navigation Buttons - Positioned in center */}
               <button
                 onClick={prevTrainer}
-                disabled={isMobile && currentTrainerIndex === 0}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               
               <button
                 onClick={nextTrainer}
-                disabled={isMobile && currentTrainerIndex >= maxIndex}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>
 
               <div 
-                className="flex transition-transform duration-1000 ease-in-out items-stretch"
+                className="flex transition-transform items-stretch"
                 style={{ 
-                  transform: `translateX(-${currentTrainerIndex * (100 / visibleCount)}%)`,
-                  width: `${(randomizedTrainers.length / visibleCount) * 100}%`
+                  transform: `translateX(-${currentPosition * (100 / visibleCount)}%)`,
+                  transitionDuration: `${carouselConfig.transition.duration}s`,
+                  transitionTimingFunction: `${carouselConfig.transition.ease.join(', ')}`
                 }}
               >
-                {randomizedTrainers.map((trainer) => (
+                {infiniteTrainers.map((trainer, index) => (
                   <div 
-                    key={trainer.id} 
+                    key={`${trainer.id}-${index}`} 
                     className="flex-shrink-0 px-2 md:px-4 flex"
-                    style={{ width: `${100 / randomizedTrainers.length}%` }}
+                    style={{ width: `${100 / visibleCount}%` }}
                   >
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5 }}
-                      className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe cursor-pointer w-full flex flex-col"
+                    <div
+                      className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 motion-safe cursor-pointer w-full flex flex-col"
                       onClick={() => handleDetailsClick(trainer, 'trainer')}
                     >
                       <div className="relative overflow-hidden">
@@ -481,7 +520,7 @@ export default function DirectionsSection() {
                           alt={trainer.name}
                           width={300}
                           height={400}
-                          className="w-full aspect-3-4 object-cover object-top group-hover:scale-110 transition-transform duration-500"
+                          className="w-full aspect-3-4 object-cover object-top group-hover:scale-105 transition-transform duration-300"
                           style={{ objectPosition: 'top 20%' }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -505,7 +544,7 @@ export default function DirectionsSection() {
                         <div className="mb-6 flex-grow">
                           <h5 className="text-sm font-medium text-gray-700 mb-3">Расписание:</h5>
                           <div className="grid grid-cols-2 gap-2">
-                            {trainer.schedule.slice(0, 2).map((timeSlot, index) => (
+                            {trainer.schedule.slice(0, 2).map((timeSlot: string, index: number) => (
                               <div key={index} className="bg-gradient-to-r from-orange-100 to-orange-50 text-orange-800 px-3 py-2 rounded-lg text-xs font-medium shadow-sm border border-orange-200">
                                 {timeSlot}
                               </div>
@@ -540,7 +579,7 @@ export default function DirectionsSection() {
                           </button>
                         </div>
                       </div>
-                    </motion.div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -548,17 +587,24 @@ export default function DirectionsSection() {
 
             {/* Dots Indicator */}
             <div className="flex justify-center mt-6 gap-2">
-              {Array.from({ length: maxIndex + 1 }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTrainerIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentTrainerIndex 
-                      ? 'bg-orange-500 scale-125' 
-                      : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                />
-              ))}
+              {Array.from({ length: randomizedTrainers.length }).map((_, index) => {
+                // Вычисляем реальный индекс для отображения активной точки
+                const realIndex = currentPosition % randomizedTrainers.length
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      // Устанавливаем позицию в расширенном массиве
+                      setCurrentPosition(startPosition + index)
+                    }}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      index === realIndex 
+                        ? 'bg-orange-500 scale-125' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                )
+              })}
             </div>
 
           </div>

@@ -65,9 +65,9 @@ export default function AdvantagesSection() {
                 delay: index * (animationConfig.transition.duration * 0.1) // Адаптивная задержка
               }}
               viewport={animationConfig.viewport}
-              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 motion-safe flex flex-col h-full"
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 motion-safe flex flex-col h-full"
             >
-              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                 <advantage.icon className="w-8 h-8 text-white flex-shrink-0" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex-shrink-0">
