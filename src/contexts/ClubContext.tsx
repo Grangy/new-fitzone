@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { siteConfig } from '../lib/siteConfig'
+import { getTrainersSchedule, getGroupPrograms, formatSchedule, mapClubIdToBranch, TrainerSchedule, GroupProgram, getTrainersWithPhotos } from '../lib/scheduleService'
 
 export interface ClubData {
   id: string
@@ -22,11 +23,7 @@ export interface ClubData {
 export interface Trainer {
   id: string
   name: string
-  specialty: string
-  experience: string
   image: string
-  certifications: string[]
-  bio: string
   schedule: string[]
 }
 
@@ -58,6 +55,57 @@ export interface ScheduleData {
   schedule: ScheduleItem[]
 }
 
+// Функция для преобразования данных тренеров из schedule.json
+function createTrainersFromSchedule(trainersData: TrainerSchedule[], clubId: string): Trainer[] {
+  return trainersData.map((trainer, index) => ({
+    id: `${clubId}-trainer-${index}`,
+    name: trainer.name,
+    image: trainer.photo || '/images/trainers/no.png',
+    schedule: formatSchedule(trainer.schedule)
+  }))
+}
+
+// Функция для преобразования групповых программ из schedule.json
+function createDirectionsFromSchedule(programsData: GroupProgram[], clubId: string): Direction[] {
+  const programDescriptions: Record<string, string> = {
+    'BELLY_DANCE': 'Экзотические танцы Востока. Развивай пластику, грацию и женственность.',
+    'LADY_DANCE': 'Современные женские танцы. Уверенность, сексуальность и женская энергия.',
+    'MOBILITY': 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
+    'STREETLIFTING': 'Уличные тренировки с собственным весом. Сила, выносливость и функциональность.',
+    'CROSSFIT': 'Высокоинтенсивные функциональные тренировки для максимального результата.',
+    'TAE-BO': 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
+    'ZYMBA': 'Танцевальная фитнес-программа под латиноамериканскую музыку. Сжигай калории и получай удовольствие!',
+    'YOGA_INTENSIV': 'Интенсивная практика йоги для продвинутых. Углубленная работа с телом и сознанием.',
+    'HATHA_YOGA': 'Классическая йога с акцентом на асаны и дыхательные практики. Идеально для начинающих.',
+    'IMBILDING': 'Специальная программа для женщин, направленная на укрепление тазового дна и женского здоровья.'
+  }
+
+  const programTitles: Record<string, string> = {
+    'BELLY_DANCE': 'Восточные танцы',
+    'LADY_DANCE': 'Леди-денс',
+    'MOBILITY': 'Суставная гимнастика',
+    'STREETLIFTING': 'Стрит-лифтинг',
+    'CROSSFIT': 'Кроссфит',
+    'TAE-BO': 'Тай-бо',
+    'ZYMBA': 'Зумба',
+    'YOGA_INTENSIV': 'Интенсивная йога',
+    'HATHA_YOGA': 'Хатха-йога',
+    'IMBILDING': 'Женское здоровье'
+  }
+
+  return programsData.map((program, index) => ({
+    id: `${clubId}-program-${index}`,
+    title: programTitles[program.name] || program.name,
+    description: programDescriptions[program.name] || 'Групповая тренировка для всех уровней подготовки.',
+    image: '/images/trainer1.jpg',
+    price: 'от 800₽',
+    duration: '60 мин',
+    level: 'Для всех уровней',
+    schedule: formatSchedule(program.schedule),
+    trainer: 'Инструктор'
+  }))
+}
+
 const clubs: ClubData[] = [
   {
     id: 'pionerskaya',
@@ -70,96 +118,8 @@ const clubs: ClubData[] = [
     instagram: 'https://instagram.com/fitzone_pionerskaya',
     description: 'Современный фитнес-клуб в центре города с полным спектром услуг',
     coordinates: { lat: 44.687617, lng: 37.791586 },
-    trainers: [
-      {
-        id: 'anna-pionerskaya',
-        name: 'Анна Петрова2',
-        specialty: 'Йога и Пилатес',
-        experience: '8 лет опыта',
-        image: '/images/trainer1.jpg',
-        certifications: ['RYT-500', 'Pilates Mat', 'Yin Yoga'],
-        bio: 'Сертифицированный инструктор йоги с 8-летним опытом. Специализируется на хатха-йоге, виньяса-флоу и восстановительной йоге.',
-        schedule: ['Пн, Ср, Пт: 09:00-10:00', 'Вт, Чт: 18:00-19:00']
-      },
-      {
-        id: 'dmitry-pionerskaya',
-        name: 'Дмитрий Волков',
-        specialty: 'Кроссфит и Функциональный тренинг',
-        experience: '6 лет опыта',
-        image: '/images/trainer1.jpg',
-        certifications: ['CrossFit L2', 'FMS', 'Olympic Weightlifting'],
-        bio: 'Мастер спорта по тяжелой атлетике. Специализируется на функциональном тренинге и кроссфите.',
-        schedule: ['Пн, Ср, Пт: 07:00-08:00', 'Вт, Чт: 19:00-20:00']
-      }
-    ],
-    directions: [
-      {
-        id: 'zumba-pionerskaya',
-        title: 'Зумба',
-        description: 'Танцевальная фитнес-программа под латиноамериканскую музыку. Сжигай калории и получай удовольствие!',
-        image: '/images/trainer1.jpg',
-        price: 'от 800₽',
-        duration: '60 мин',
-        level: 'Для всех уровней',
-        schedule: ['Пн, Ср, Пт: 19:00', 'Сб: 10:00'],
-        trainer: 'Анна Петрова'
-      },
-      {
-        id: 'yoga-pionerskaya',
-        title: 'Йога',
-        description: 'Гармония тела и духа. Улучши гибкость, силу и найди внутренний баланс.',
-        image: '/images/trainer1.jpg',
-        price: 'от 800₽',
-        duration: '60 мин',
-        level: 'Для всех уровней',
-        schedule: ['Пн, Ср, Пт: 09:00', 'Вт, Чт: 18:00'],
-        trainer: 'Анна Петрова'
-      },
-      {
-        id: 'hatha-yoga-pionerskaya',
-        title: 'Хатха-йога',
-        description: 'Классическая йога с акцентом на асаны и дыхательные практики. Идеально для начинающих.',
-        image: '/images/trainer1.jpg',
-        price: 'от 800₽',
-        duration: '60 мин',
-        level: 'Начинающий',
-        schedule: ['Вт, Чт: 10:00', 'Сб: 11:00'],
-        trainer: 'Анна Петрова'
-      },
-      {
-        id: 'joint-gymnastics-pionerskaya',
-        title: 'Суставная гимнастика',
-        description: 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
-        image: '/images/trainer1.jpg',
-        price: 'от 600₽',
-        duration: '45 мин',
-        level: 'Для всех уровней',
-        schedule: ['Пн, Ср: 08:00', 'Пт: 18:30'],
-        trainer: 'Анна Петрова'
-      },
-      {
-        id: 'women-health-pionerskaya',
-        title: 'Женское здоровье',
-        description: 'Специальная программа для женщин, направленная на укрепление тазового дна и женского здоровья.',
-        image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        price: 'от 1000₽',
-        duration: '60 мин',
-        level: 'Женщины',
-        schedule: ['Вт, Чт: 19:30', 'Сб: 12:00'],
-        trainer: 'Анна Петрова'
-      },
-      {
-        id: 'taebo-pionerskaya',
-        title: 'Тай-бо',
-        description: 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
-        image: '/images/trainer1.jpg',
-        price: 'от 900₽',
-        duration: '60 мин',
-        level: 'Средний',
-        schedule: ['Пн, Ср: 20:00', 'Пт: 19:00'],
-        trainer: 'Дмитрий Волков'
-      }
-    ],
+    trainers: createTrainersFromSchedule(getTrainersWithPhotos('ПИОНЕРСКАЯ'), 'pionerskaya'),
+    directions: createDirectionsFromSchedule(getGroupPrograms('ПИОНЕРСКАЯ'), 'pionerskaya'),
     photos: [
       '/images/gym1.jpg',
       '/images/gym2.jpg',
@@ -177,96 +137,8 @@ const clubs: ClubData[] = [
     instagram: 'https://instagram.com/fitzone_mira',
     description: 'Новый современный фитнес-центр с передовым оборудованием',
     coordinates: { lat: 44.726687, lng: 37.767512 },
-    trainers: [
-      {
-        id: 'elena-mira',
-        name: 'Елена Смирнова',
-        specialty: 'Персональные тренировки',
-        experience: '10 лет опыта',
-        image: '/images/trainer1.jpg',
-        certifications: ['NASM-CPT', 'Nutrition Coach', 'TRX'],
-        bio: 'Сертифицированный персональный тренер с 10-летним опытом. Специализируется на коррекции фигуры и реабилитации.',
-        schedule: ['Пн-Пт: 08:00-20:00', 'Сб: 09:00-15:00']
-      },
-      {
-        id: 'mikhail-mira',
-        name: 'Михаил Козлов',
-        specialty: 'Пилатес и Функциональный тренинг',
-        experience: '7 лет опыта',
-        image: '/images/trainer1.jpg',
-        certifications: ['Pilates Mat', 'Reformer', 'Functional Training'],
-        bio: 'Сертифицированный инструктор пилатеса. Специализируется на работе с позвоночником и коррекции осанки.',
-        schedule: ['Пн, Ср, Пт: 10:00-11:00', 'Вт, Чт: 17:00-18:00']
-      }
-    ],
-    directions: [
-      {
-        id: 'oriental-dance-mira',
-        title: 'Восточные танцы',
-        description: 'Экзотические танцы Востока. Развивай пластику, грацию и женственность.',
-        image: '/images/trainer1.jpg',
-        price: 'от 800₽',
-        duration: '60 мин',
-        level: 'Для всех уровней',
-        schedule: ['Пн, Ср: 19:00', 'Сб: 11:00'],
-        trainer: 'Елена Смирнова'
-      },
-      {
-        id: 'lady-dance-mira',
-        title: 'Леди-денс',
-        description: 'Современные женские танцы. Уверенность, сексуальность и женская энергия.',
-        image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
-        price: 'от 900₽',
-        duration: '60 мин',
-        level: 'Для всех уровней',
-        schedule: ['Вт, Чт: 20:00', 'Пт: 19:00'],
-        trainer: 'Елена Смирнова'
-      },
-      {
-        id: 'joint-gymnastics-mira',
-        title: 'Суставная гимнастика',
-        description: 'Мягкие упражнения для улучшения подвижности суставов и профилактики заболеваний.',
-        image: '/images/trainer1.jpg',
-        price: 'от 600₽',
-        duration: '45 мин',
-        level: 'Для всех уровней',
-        schedule: ['Пн, Ср: 08:00', 'Пт: 18:30'],
-        trainer: 'Михаил Козлов'
-      },
-      {
-        id: 'taebo-mira',
-        title: 'Тай-бо',
-        description: 'Боевые искусства в фитнес-формате. Развивай координацию, силу и выносливость.',
-        image: '/images/trainer1.jpg',
-        price: 'от 900₽',
-        duration: '60 мин',
-        level: 'Средний',
-        schedule: ['Пн, Ср: 20:00', 'Пт: 19:00'],
-        trainer: 'Михаил Козлов'
-      },
-      {
-        id: 'street-lifting-mira',
-        title: 'Стрит-лифтинг',
-        description: 'Уличные тренировки с собственным весом. Сила, выносливость и функциональность.',
-        image: '/images/trainer1.jpg',
-        price: 'от 1000₽',
-        duration: '60 мин',
-        level: 'Средний-продвинутый',
-        schedule: ['Вт, Чт: 19:00', 'Сб: 10:00'],
-        trainer: 'Михаил Козлов'
-      },
-      {
-        id: 'crossfit-mira',
-        title: 'Кроссфит',
-        description: 'Высокоинтенсивные функциональные тренировки для максимального результата.',
-        image: '/images/trainer1.jpg',
-        price: 'от 1200₽',
-        duration: '60 мин',
-        level: 'Средний-продвинутый',
-        schedule: ['Пн, Ср, Пт: 07:00', 'Вт, Чт: 19:00'],
-        trainer: 'Михаил Козлов'
-      }
-    ],
+    trainers: createTrainersFromSchedule(getTrainersWithPhotos('МИРА'), 'mira'),
+    directions: createDirectionsFromSchedule(getGroupPrograms('МИРА'), 'mira'),
     photos: [
       '/images/gym1.jpg',
       '/images/gym2.jpg',

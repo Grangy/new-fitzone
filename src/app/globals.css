@@ -79,9 +79,17 @@
   }
 
   /* Improved animation performance */
-  .motion-safe {
-    will-change: transform, opacity;
-  }
+    .motion-safe {
+      will-change: transform, opacity;
+    }
+
+    .aspect-9-16 {
+      aspect-ratio: 9 / 16;
+    }
+
+    .aspect-3-4 {
+      aspect-ratio: 3 / 4;
+    }
 
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {

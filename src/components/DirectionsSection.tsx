@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle, X, ShoppingCart } from 'lucide-react'
+import { ArrowRight, Sparkles, Download, ExternalLink, Phone, MessageCircle, X, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
 import BookingModal from './BookingModal'
 import FitnessQuiz from './FitnessQuiz'
@@ -26,6 +26,13 @@ export default function DirectionsSection() {
   } | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+  const [currentTrainerIndex, setCurrentTrainerIndex] = useState(0)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
+  const trainerCarouselRef = useRef<HTMLDivElement>(null)
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
   const [selectedDetails, setSelectedDetails] = useState<{
     title?: string;
     name?: string;
@@ -36,6 +43,7 @@ export default function DirectionsSection() {
     specialty?: string;
     experience?: string;
     certifications?: string[];
+    image?: string;
     type: 'direction' | 'trainer';
   } | null>(null)
   const { getAnimationConfig } = useMobileOptimizedAnimations()
@@ -43,18 +51,81 @@ export default function DirectionsSection() {
   const { selectedClub } = useClub()
   const forceUpdate = useForceUpdate()
 
+  // Функция для рандомной сортировки тренеров
+  const getRandomizedTrainers = () => {
+    return [...selectedClub.trainers].sort(() => Math.random() - 0.5)
+  }
+
+  // Получаем рандомно отсортированных тренеров
+  const randomizedTrainers = getRandomizedTrainers()
+
+  // Определяем количество видимых элементов в зависимости от размера экрана
+  const getVisibleCount = () => {
+    if (typeof window === 'undefined') return 4
+    return window.innerWidth >= 1024 ? 4 : 1 // 4 на desktop, 1 на mobile
+  }
+
+  const visibleCount = getVisibleCount()
+  const maxIndex = Math.max(0, randomizedTrainers.length - visibleCount)
+
   // Listen for club changes to trigger re-render
   useEffect(() => {
     const handleClubChange = () => {
       // Force re-render when club changes
       setSelectedDirection('')
       setQuizResult(null)
+      setCurrentTrainerIndex(0) // Reset carousel index
       forceUpdate()
     }
 
     window.addEventListener('clubChanged', handleClubChange)
     return () => window.removeEventListener('clubChanged', handleClubChange)
   }, [forceUpdate])
+
+  // Auto-play carousel
+  useEffect(() => {
+    if (isAutoPlaying && randomizedTrainers.length > visibleCount) {
+      autoPlayRef.current = setInterval(() => {
+        setCurrentTrainerIndex((prev) => {
+          if (isMobile) {
+            // Обычная карусель для мобильных
+            if (prev >= maxIndex) {
+              return 0 // Reset to beginning
+            }
+            return Math.min(prev + 1, maxIndex)
+          } else {
+            // Бесконечная карусель для ПК
+            return (prev + 1) % (maxIndex + 1)
+          }
+        })
+      }, 6000) // Change slide every 6 seconds
+
+      return () => {
+        if (autoPlayRef.current) {
+          clearInterval(autoPlayRef.current)
+        }
+      }
+    }
+  }, [isAutoPlaying, randomizedTrainers.length, visibleCount, maxIndex, isMobile])
+
+  // Pause auto-play on hover
+  const handleCarouselHover = (isHovering: boolean) => {
+    setIsAutoPlaying(!isHovering)
+  }
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const newIsMobile = window.innerWidth < 1024
+      setIsMobile(newIsMobile)
+      // Reset carousel index when switching between mobile/desktop
+      setCurrentTrainerIndex(0)
+    }
+
+    handleResize() // Set initial state
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Handle ESC key to close quiz
   useEffect(() => {
@@ -126,6 +197,7 @@ export default function DirectionsSection() {
     specialty?: string;
     experience?: string;
     certifications?: string[];
+    image?: string;
   }, type: 'direction' | 'trainer') => {
     setSelectedDetails({ ...item, type })
     setIsDetailsModalOpen(true)
@@ -135,6 +207,67 @@ export default function DirectionsSection() {
     if (e.target === e.currentTarget) {
       setIsDetailsModalOpen(false)
     }
+  }
+
+  // Функции для управления каруселью тренеров
+  const nextTrainer = () => {
+    if (isMobile) {
+      setCurrentTrainerIndex((prev) => Math.min(prev + 1, maxIndex))
+    } else {
+      // Бесконечная карусель для ПК
+      setCurrentTrainerIndex((prev) => (prev + 1) % (maxIndex + 1))
+    }
+  }
+
+  const prevTrainer = () => {
+    if (isMobile) {
+      setCurrentTrainerIndex((prev) => Math.max(prev - 1, 0))
+    } else {
+      // Бесконечная карусель для ПК
+      setCurrentTrainerIndex((prev) => (prev - 1 + (maxIndex + 1)) % (maxIndex + 1))
+    }
+  }
+
+  // Функции для обработки свайпа
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
+
+    if (isLeftSwipe) {
+      nextTrainer()
+    } else if (isRightSwipe) {
+      prevTrainer()
+    }
+  }
+
+  // Функция для преобразования расписания в матричный формат
+  const createScheduleMatrix = (schedule: string[]) => {
+    const days = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС']
+    const matrix: Record<string, string[]> = {}
+    
+    days.forEach(day => {
+      matrix[day] = []
+    })
+
+    schedule.forEach(timeSlot => {
+      const [day, time] = timeSlot.split(': ')
+      if (matrix[day]) {
+        matrix[day].push(time)
+      }
+    })
+
+    return matrix
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -288,89 +421,146 @@ export default function DirectionsSection() {
           </div>
         </div>
 
-        {/* Individual Trainings */}
+        {/* Individual Trainings - Universal Carousel */}
         <div className="mb-12">
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Индивидуальные тренировки</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {selectedClub.trainers.map((trainer, index) => (
-              <motion.div
-                key={trainer.id}
-                initial={animationConfig.initial}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  ...animationConfig.transition,
-                  delay: index * (animationConfig.transition.duration * 0.1)
-                }}
-                viewport={animationConfig.viewport}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe cursor-pointer"
-                onClick={() => handleDetailsClick(trainer, 'trainer')}
+          
+          {/* Universal Carousel for all devices */}
+          <div 
+            className="relative"
+            onMouseEnter={() => handleCarouselHover(true)}
+            onMouseLeave={() => handleCarouselHover(false)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            <div 
+              ref={trainerCarouselRef}
+              className="overflow-hidden rounded-2xl relative"
+            >
+              {/* Navigation Buttons - Positioned in center */}
+              <button
+                onClick={prevTrainer}
+                disabled={isMobile && currentTrainerIndex === 0}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={trainer.image}
-                    alt={trainer.name}
-                    width={400}
-                    height={300}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg">
-                    Индивидуальная карта
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">
-                    {trainer.name}
-                  </h4>
-                  <p className="text-orange-600 font-semibold mb-4">
-                    {trainer.specialty}
-                  </p>
-                  <p className="text-gray-600 mb-4 leading-relaxed text-sm">
-                    {trainer.bio}
-                  </p>
-                  
-                  {/* Certifications */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-medium text-gray-700">Сертификации:</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {trainer.certifications.slice(0, 2).map((cert, certIndex) => (
-                        <span 
-                          key={certIndex}
-                          className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full"
-                        >
-                          {cert}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-3">
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleBookingClick(trainer.id)
-                      }}
-                      className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              
+              <button
+                onClick={nextTrainer}
+                disabled={isMobile && currentTrainerIndex >= maxIndex}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+
+              <div 
+                className="flex transition-transform duration-1000 ease-in-out items-stretch"
+                style={{ 
+                  transform: `translateX(-${currentTrainerIndex * (100 / visibleCount)}%)`,
+                  width: `${(randomizedTrainers.length / visibleCount) * 100}%`
+                }}
+              >
+                {randomizedTrainers.map((trainer) => (
+                  <div 
+                    key={trainer.id} 
+                    className="flex-shrink-0 px-2 md:px-4 flex"
+                    style={{ width: `${100 / randomizedTrainers.length}%` }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 motion-safe cursor-pointer w-full flex flex-col"
+                      onClick={() => handleDetailsClick(trainer, 'trainer')}
                     >
-                      Записаться
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDetailsClick(trainer, 'trainer')
-                      }}
-                      className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
-                      title="Подробнее"
-                    >
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                    </button>
+                      <div className="relative overflow-hidden">
+                        <Image
+                          src={trainer.image}
+                          alt={trainer.name}
+                          width={300}
+                          height={400}
+                          className="w-full aspect-3-4 object-cover object-top group-hover:scale-110 transition-transform duration-500"
+                          style={{ objectPosition: 'top 20%' }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-full px-3 py-1 text-xs font-bold shadow-lg">
+                          Индивидуальная карта
+                        </div>
+                        {/* Auto-play indicator */}
+                        <div className="absolute top-4 left-4">
+                          <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                            isAutoPlaying ? 'bg-green-500' : 'bg-gray-400'
+                          }`} />
+                        </div>
+                      </div>
+                      
+                      <div className="p-6 flex flex-col flex-grow">
+                        <h4 className="text-xl font-bold text-gray-900 mb-4">
+                          {trainer.name}
+                        </h4>
+                        
+                        {/* Schedule */}
+                        <div className="mb-6 flex-grow">
+                          <h5 className="text-sm font-medium text-gray-700 mb-3">Расписание:</h5>
+                          <div className="grid grid-cols-2 gap-2">
+                            {trainer.schedule.slice(0, 2).map((timeSlot, index) => (
+                              <div key={index} className="bg-gradient-to-r from-orange-100 to-orange-50 text-orange-800 px-3 py-2 rounded-lg text-xs font-medium shadow-sm border border-orange-200">
+                                {timeSlot}
+                              </div>
+                            ))}
+                            {trainer.schedule.length > 2 && (
+                              <div className="col-span-2 text-xs text-gray-500 text-center py-1">
+                                +{trainer.schedule.length - 2} еще...
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-3 mt-auto">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleBookingClick(trainer.id)
+                            }}
+                            className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
+                          >
+                            Записаться
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDetailsClick(trainer, 'trainer')
+                            }}
+                            className="px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:text-orange-500 transition-all duration-300 group"
+                            title="Подробнее"
+                          >
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                ))}
+              </div>
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex justify-center mt-6 gap-2">
+              {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTrainerIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentTrainerIndex 
+                      ? 'bg-orange-500 scale-125' 
+                      : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                />
+              ))}
+            </div>
+
           </div>
         </div>
 
@@ -495,9 +685,30 @@ export default function DirectionsSection() {
           >
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {selectedDetails.title || selectedDetails.name}
-                </h2>
+                <div className="flex items-center gap-4">
+                  {/* Trainer Photo */}
+                  {selectedDetails.type === 'trainer' && (
+                    <div className="relative">
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-orange-200 shadow-lg">
+                        <Image
+                          src={selectedDetails.image || '/images/trainers/no.png'}
+                          alt={selectedDetails.name || ''}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover object-top"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      {selectedDetails.title || selectedDetails.name}
+                    </h2>
+                    {selectedDetails.type === 'trainer' && (
+                      <p className="text-orange-600 font-medium mt-1">Персональный тренер</p>
+                    )}
+                  </div>
+                </div>
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -518,14 +729,44 @@ export default function DirectionsSection() {
 
                 {/* Schedule for directions */}
                 {selectedDetails.type === 'direction' && selectedDetails.schedule && (
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Расписание</h3>
-                    <div className="space-y-2">
-                      {selectedDetails.schedule.map((time: string, index: number) => (
-                        <div key={index} className="bg-orange-50 px-3 py-2 rounded-lg">
-                          <span className="text-orange-800 font-medium">{time}</span>
-                        </div>
-                      ))}
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">Расписание занятий</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {selectedDetails.schedule.map((time: string, index: number) => {
+                        const [day, timeSlot] = time.split(': ')
+                        return (
+                          <motion.div 
+                            key={index} 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="bg-white rounded-xl p-4 shadow-lg border border-gray-200 hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                                  {day}
+                                </div>
+                                <div>
+                                  <div className="font-semibold text-gray-900 text-sm">{day}</div>
+                                  <div className="text-gray-500 text-xs">День недели</div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-bold text-blue-600 text-lg">{timeSlot}</div>
+                                <div className="text-gray-500 text-xs">Время</div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
                     </div>
                   </div>
                 )}
@@ -533,26 +774,92 @@ export default function DirectionsSection() {
                 {/* Trainer details for trainers */}
                 {selectedDetails.type === 'trainer' && (
                   <>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Специализация</h3>
-                      <p className="text-orange-600 font-medium">{selectedDetails.specialty}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Опыт</h3>
-                      <p className="text-gray-600">{selectedDetails.experience}</p>
-                    </div>
+                    {/* Schedule for trainers - Matrix View */}
+                    {selectedDetails.schedule && (
+                      <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-6 border border-orange-200">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900">Расписание тренера</h3>
+                        </div>
+                        
+                        {/* Schedule Matrix */}
+                        <div className="bg-white rounded-xl p-2 md:p-4 shadow-lg border border-orange-200">
+                          {/* Desktop Matrix View */}
+                          <div className="hidden sm:grid grid-cols-8 gap-1 md:gap-2 text-xs">
+                            {/* Header */}
+                            <div className="font-bold text-gray-700 text-center py-2">День</div>
+                            {['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'].map(day => (
+                              <div key={day} className="font-bold text-gray-700 text-center py-2 bg-orange-100 rounded-lg">
+                                {day}
+                              </div>
+                            ))}
+                            
+                            {/* Schedule rows */}
+                            {(() => {
+                              const scheduleMatrix = createScheduleMatrix(selectedDetails.schedule)
+                              const maxSlots = Math.max(...Object.values(scheduleMatrix).map(slots => slots.length))
+                              const rows = []
+                              
+                              for (let i = 0; i < maxSlots; i++) {
+                                rows.push(
+                                  <div key={i} className="contents">
+                                    <div className="font-medium text-gray-600 text-center py-2 text-xs">
+                                      {i === 0 ? 'Время' : ''}
+                                    </div>
+                                    {['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'].map(day => {
+                                      const timeSlot = scheduleMatrix[day][i]
+                                      return (
+                                        <div key={day} className="text-center py-1">
+                                          {timeSlot ? (
+                                            <div className="bg-orange-500 text-white px-1 md:px-2 py-1 rounded-lg text-xs font-medium shadow-sm">
+                                              {timeSlot}
+                                            </div>
+                                          ) : (
+                                            <div className="text-gray-300 text-xs">-</div>
+                                          )}
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                )
+                              }
+                              return rows
+                            })()}
+                          </div>
 
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Сертификации</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedDetails.certifications?.map((cert: string, index: number) => (
-                          <span key={index} className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
-                            {cert}
-                          </span>
-                        ))}
+                          {/* Mobile Compact View */}
+                          <div className="sm:hidden">
+                            {(() => {
+                              const scheduleMatrix = createScheduleMatrix(selectedDetails.schedule)
+                              const days = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС']
+                              return days.map(day => {
+                                const timeSlots = scheduleMatrix[day]
+                                if (timeSlots.length === 0) return null
+                                
+                                return (
+                                  <div key={day} className="flex items-center gap-2 mb-2 p-2 bg-gray-50 rounded-lg">
+                                    <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                      {day}
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                      {timeSlots.map((time, index) => (
+                                        <div key={index} className="bg-orange-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                          {time}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )
+                              })
+                            })()}
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Контакты</h3>
